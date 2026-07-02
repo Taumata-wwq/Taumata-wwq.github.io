@@ -17,10 +17,6 @@
       "en": "Avatar"
     },
     {
-      "zh": "知世",
-      "en": "Tomoyo"
-    },
-    {
       "zh": "无偿",
       "en": "Free"
     },
@@ -70,11 +66,19 @@
     },
     {
       "zh": "茶绘",
-      "en": ""
+      "en": "E-chat",
+      "desc": {
+        "zh": "",
+        "en": ""
+      }
     },
     {
       "zh": "虚拟歌姬",
-      "en": ""
+      "en": "VOCALOID",
+      "desc": {
+        "zh": "",
+        "en": ""
+      }
     }
   ],
   "site": {
@@ -501,20 +505,6 @@
           "url": "https://magma.com/d/P3g6MDuhlz"
         }
       ]
-    },
-    {
-      "id": 15,
-      "title": {
-        "zh": "",
-        "en": ""
-      },
-      "desc": {
-        "zh": "",
-        "en": ""
-      },
-      "tags": [],
-      "datetime": "2026-07-02 17:26",
-      "year": "2026"
     }
   ],
   "notes": [

@@ -63,6 +63,14 @@ function getCover(p) {
   return p.image || '';
 }
 
+/* 将图片 URL 转为缩略图 URL（assets/images/xxx.jpg → assets/images/xxx_thumb.jpg） */
+function toThumbUrl(url) {
+  if (!url) return url;
+  const dot = url.lastIndexOf('.');
+  if (dot < 0) return url;
+  return url.slice(0, dot) + '_thumb' + url.slice(dot);
+}
+
 /* 取作品时间（兼容 year/datetime 字段） */
 function getTimestamp(p) {
   const dt = p.datetime || p.year || '';
@@ -487,12 +495,14 @@ function workCard(p, i, lang) {
     return 0;
   });
   const img = getCover(p);
+  /* 卡片展示用缩略图，加载失败时回退到原图 */
+  const thumbSrc = toThumbUrl(img);
 
   return `
     <li class="work-card" data-href="#/work/${id}">
       <div class="work-card-img" ${img ? '' : 'data-empty'}>
         ${img
-          ? `<img src="${img}" alt="${title}" loading="lazy" />`
+          ? `<img src="${thumbSrc}" alt="${escapeHtml(title)}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${img}'" />`
           : `<span class="work-card-empty">${t('workdetail.placeholder', lang)}</span>`}
       </div>
       <div class="work-card-body">
@@ -1252,7 +1262,7 @@ async function showTagPopover(anchorEl, tagText, lang) {
             const title = loc(p.title, lang);
             return `
               <a href="#/work/${p.id}" class="tag-popover-work">
-                ${cover ? `<span class="tag-popover-work-img" style="background-image:url('${escapeHtml(cover)}')"></span>` : '<span class="tag-popover-work-img tag-popover-work-img--empty"></span>'}
+                ${cover ? `<span class="tag-popover-work-img" style="background-image:url('${escapeHtml(toThumbUrl(cover))}')"></span>` : '<span class="tag-popover-work-img tag-popover-work-img--empty"></span>'}
                 <span class="tag-popover-work-title">${escapeHtml(title)}</span>
               </a>
             `;

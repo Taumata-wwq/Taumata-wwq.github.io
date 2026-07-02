@@ -127,6 +127,12 @@ class Handler(SimpleHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        # 静态资源缓存：图片/CSS/JS 缓存 7 天，projects.json 不缓存
+        path = urlparse(self.path).path.lower()
+        if any(path.endswith(ext) for ext in ('.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.bmp', '.avif', '.css', '.js')):
+            self.send_header('Cache-Control', 'public, max-age=604800')
+        elif path.endswith('projects.json') or path.startswith('/api/'):
+            self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate')
         super().end_headers()
 
     def log_message(self, fmt, *args):
