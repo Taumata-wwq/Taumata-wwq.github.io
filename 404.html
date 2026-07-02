@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 · Taumata</title>
+  <link rel="stylesheet" href="assets/css/tokens.css">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <script>
+    // FOUC 防闪 + 语言同步
+    (function () {
+      try {
+        var KEY = 'taumata.theme.v1';
+        var DEFAULT_RGB = '255,107,53';
+        var mode = 'light';
+        var rgb = DEFAULT_RGB;
+        var stored = localStorage.getItem(KEY);
+        if (stored) {
+          var cfg = JSON.parse(stored);
+          if (cfg.mode === 'light' || cfg.mode === 'dark') mode = cfg.mode;
+          if (typeof cfg.accent_rgb === 'string') rgb = cfg.accent_rgb;
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          mode = 'dark';
+        }
+        var root = document.documentElement;
+        root.setAttribute('data-theme', mode);
+        var p = rgb.split(',');
+        root.style.setProperty('--accent-r', p[0].trim());
+        root.style.setProperty('--accent-g', p[1].trim());
+        root.style.setProperty('--accent-b', p[2].trim());
+      } catch (e) {}
+    })();
+  </script>
+  <style>
+    body { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: var(--sp-4); }
+    .e404 { text-align: center; max-width: 480px; }
+    .e404 .eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: 0.24em; color: var(--fg-dim); text-transform: uppercase; margin-bottom: var(--sp-3); }
+    .e404 .big { font-family: var(--mono); font-size: clamp(56px, 14vw, 96px); font-weight: 700; letter-spacing: -0.04em; line-height: 1; color: var(--fg); margin-bottom: var(--sp-4); }
+    .e404 .title { font-family: var(--mono); font-size: 16px; font-weight: 600; letter-spacing: 0.06em; color: var(--fg); margin-bottom: var(--sp-3); }
+    .e404 .desc { color: var(--fg-muted); font-size: 14px; line-height: 1.6; margin-bottom: var(--sp-5); }
+  </style>
+</head>
+<body>
+  <div class="e404">
+    <p class="eyebrow">ERROR</p>
+    <p class="big">404</p>
+    <p class="title">页面未找到</p>
+    <p class="desc">路径不存在，或者它从来就不在这里。</p>
+    <a href="./index.html" class="btn-primary">← 回到首页</a>
+  </div>
+</body>
+</html>

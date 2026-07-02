@@ -1,0 +1,245 @@
+/* ============================================================
+   components.css — 按钮 / Tag / Card / Toast / 图标
+   ============================================================ */
+
+/* ---------- 顶部栏按钮组 ---------- */
+.topbar-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* 顶部栏搜索框 */
+.topbar-search {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  margin: 0 6px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  transition: border-color var(--dur-fast) var(--ease-out),
+              background-color var(--dur-fast) var(--ease-out);
+}
+.topbar-search:focus-within {
+  border-color: var(--accent);
+  background: var(--bg);
+}
+.topbar-search .search-icon {
+  color: var(--fg-dim);
+  flex-shrink: 0;
+}
+.topbar-search-input {
+  width: 160px;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--fg);
+  padding: 0;
+}
+.topbar-search-input::placeholder { color: var(--fg-dim); }
+.topbar-search-input::-webkit-search-cancel-button { display: none; }
+
+@media (max-width: 768px) {
+  .topbar-search { display: none; }
+}
+
+/* 图标按钮 */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  color: var(--fg-muted);
+  border: 1px solid transparent;
+  transition: color var(--dur-fast) var(--ease-out),
+              background-color var(--dur-fast) var(--ease-out),
+              border-color var(--dur-fast) var(--ease-out);
+}
+.icon-btn:hover {
+  color: var(--fg);
+  background: var(--hover-bg);
+  border-color: var(--border);
+}
+.icon-btn:active { background: var(--bg-sunken); }
+.icon-btn.is-active {
+  color: var(--fg);
+  background: var(--hover-bg);
+  border-color: var(--border-strong);
+}
+
+/* 文字按钮 */
+.text-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  padding: 0 10px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--fg-muted);
+  border: 1px solid transparent;
+  transition: color var(--dur-fast) var(--ease-out),
+              background-color var(--dur-fast) var(--ease-out),
+              border-color var(--dur-fast) var(--ease-out);
+}
+.text-btn:hover {
+  color: var(--fg);
+  background: var(--hover-bg);
+  border-color: var(--border);
+}
+
+/* 主按钮（CTA） */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  height: 36px;
+  padding: 0 var(--sp-4);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bg);
+  background: var(--fg);
+  border: 1px solid var(--fg);
+  transition: transform var(--dur-fast) var(--ease-out),
+              background-color var(--dur-fast) var(--ease-out),
+              color var(--dur-fast) var(--ease-out);
+}
+.btn-primary:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  transform: translateY(-1px);
+}
+.btn-primary:active { transform: translateY(0); }
+
+/* 次按钮 */
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  height: 36px;
+  padding: 0 var(--sp-4);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg);
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  transition: background-color var(--dur-fast) var(--ease-out),
+              border-color var(--dur-fast) var(--ease-out),
+              transform var(--dur-fast) var(--ease-out);
+}
+.btn-ghost:hover {
+  background: var(--hover-bg);
+  border-color: var(--fg);
+  transform: translateY(-1px);
+}
+
+/* 明暗图标切换 */
+.icon-sun { display: none; }
+.icon-moon { display: block; }
+[data-theme="light"] .icon-sun { display: block; }
+[data-theme="light"] .icon-moon { display: none; }
+
+.icon-external {
+  color: var(--fg-dim);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+/* ---------- Tag 标签 ---------- */
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-top: var(--sp-4);
+}
+.tag-list--inline { margin-top: var(--sp-3); }
+.tag {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  padding: 4px 8px;
+  border: 1px solid var(--border-strong);
+  color: var(--fg-muted);
+  background: transparent;
+  text-transform: uppercase;
+  line-height: 1;
+  transition: color var(--dur-fast) var(--ease-out),
+              border-color var(--dur-fast) var(--ease-out);
+}
+.tag:hover {
+  color: var(--fg);
+  border-color: var(--fg);
+}
+.tag-list--inline .tag {
+  font-size: 10px;
+  padding: 3px 6px;
+  color: var(--fg-dim);
+  border-color: var(--border);
+}
+
+/* ---------- Toast 提示 ---------- */
+.toast {
+  position: fixed;
+  bottom: var(--sp-5);
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--fg);
+  color: var(--bg);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 10px 14px;
+  border: 1px solid var(--fg);
+  z-index: 200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur) var(--ease-out),
+              transform var(--dur) var(--ease-out);
+}
+.toast.is-show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ---------- 标签（label 小字） ---------- */
+.label {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--fg-dim);
+  text-transform: uppercase;
+}
+
+/* ---------- 分隔线 ---------- */
+.divider {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: var(--sp-5) 0;
+}
+
+/* ---------- 空状态 ---------- */
+.empty-state {
+  padding: var(--sp-7) var(--sp-4);
+  text-align: center;
+  color: var(--fg-dim);
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}

@@ -1,0 +1,71 @@
+/* ============================================================
+   tokens.css — 设计令牌：颜色 / 间距 / 字号 / 缓动
+   全站变量集中在此，主题切换只覆盖颜色变量
+   ============================================================ */
+
+:root {
+  /* 强调色（运行时由 theme.js 动态写入 --accent-r/g/b） */
+  --accent-r: 255;
+  --accent-g: 107;
+  --accent-b: 53;
+  --accent: rgb(var(--accent-r), var(--accent-g), var(--accent-b));
+  --accent-soft: rgba(var(--accent-r), var(--accent-g), var(--accent-b), 0.14);
+  --accent-strong: rgba(var(--accent-r), var(--accent-g), var(--accent-b), 0.42);
+  --hue: 18deg;
+
+  /* 字体栈 */
+  --mono: ui-monospace, "SFMono-Regular", "Cascadia Code", "Source Code Pro", Menlo, Consolas, "Liberation Mono", monospace;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+
+  /* 容器宽度 */
+  --maxw: 960px;
+  --maxw-narrow: 720px;
+  --topbar-h: 48px;
+
+  /* 4px 网格 */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+
+  /* 缓动曲线 */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 120ms;
+  --dur: 200ms;
+  --dur-slow: 360ms;
+}
+
+[data-theme="light"] {
+  --bg: #FAFAFA;
+  --bg-elevated: #FFFFFF;
+  --bg-sunken: #F1F1F1;
+  --fg: #1A1A1A;
+  --fg-muted: #5A5A5A;
+  --fg-dim: #9A9A9A;
+  --border: #E0E0E0;
+  --border-strong: #B5B5B5;
+  --hover-bg: #EFEFEF;
+  --selection: rgba(var(--accent-r), var(--accent-g), var(--accent-b), 0.25);
+  --shadow-1: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-2: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+[data-theme="dark"] {
+  --bg: #0F0F0F;
+  --bg-elevated: #181818;
+  --bg-sunken: #0A0A0A;
+  --fg: #E8E8E8;
+  --fg-muted: #A0A0A0;
+  --fg-dim: #606060;
+  --border: #262626;
+  --border-strong: #3A3A3A;
+  --hover-bg: #1F1F1F;
+  --selection: rgba(var(--accent-r), var(--accent-g), var(--accent-b), 0.32);
+  --shadow-1: 0 1px 2px rgba(0,0,0,0.4);
+  --shadow-2: 0 8px 24px rgba(0,0,0,0.5);
+}

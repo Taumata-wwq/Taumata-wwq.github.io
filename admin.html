@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="cache-control" content="no-cache, no-store, must-revalidate">
+  <meta name="pragma" content="no-cache">
+  <meta name="expires" content="0">
+  <title>Admin · Taumata</title>
+
+  <link rel="stylesheet" href="assets/css/tokens.css">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/admin.css">
+
+  <script>
+    // FOUC 防闪：复用主页主题逻辑
+    (function () {
+      try {
+        var KEY = 'taumata.theme.v1';
+        var DEFAULT_RGB = '255,107,53';
+        var mode = 'light';
+        var rgb = DEFAULT_RGB;
+        var stored = localStorage.getItem(KEY);
+        if (stored) {
+          var cfg = JSON.parse(stored);
+          if (cfg.mode === 'light' || cfg.mode === 'dark') mode = cfg.mode;
+          if (typeof cfg.accent_rgb === 'string' && /^\d{1,3},\d{1,3},\d{1,3}$/.test(cfg.accent_rgb)) rgb = cfg.accent_rgb;
+        }
+        var root = document.documentElement;
+        root.setAttribute('data-theme', mode);
+        var p = rgb.split(',');
+        root.style.setProperty('--accent-r', p[0].trim());
+        root.style.setProperty('--accent-g', p[1].trim());
+        root.style.setProperty('--accent-b', p[2].trim());
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body class="admin-shell">
+
+  <!-- 后台顶部栏 -->
+  <header class="admin-topbar">
+    <div class="admin-title">
+      TAUMATA <span>· ADMIN</span>
+    </div>
+    <div class="topbar-actions">
+      <a id="siteLink" href="https://taumata-wwq.github.io/" target="_blank" rel="noopener" class="text-btn">SITE ↗</a>
+      <span id="saveStatus" class="save-status">已保存</span>
+      <button id="themeToggle" class="icon-btn" type="button" aria-label="切换明暗">
+        <svg class="icon icon-sun" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4">
+          <circle cx="8" cy="8" r="3"/>
+          <path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4"/>
+        </svg>
+        <svg class="icon icon-moon" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4">
+          <path d="M13 9.2A5.5 5.5 0 0 1 6.8 3 5.5 5.5 0 1 0 13 9.2z"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- 后台主体 -->
+  <div class="admin-body">
+
+    <!-- 侧边栏 -->
+    <aside class="admin-side">
+      <div class="admin-side-section">
+        <div class="admin-side-label">SECTION</div>
+        <a class="admin-side-link is-active" data-tab="site" href="#site">
+          <span>主页信息</span>
+        </a>
+        <a class="admin-side-link" data-tab="projects" href="#projects">
+          <span>作品列表</span>
+        </a>
+        <a class="admin-side-link" data-tab="notes" href="#notes">
+          <span>笔记列表</span>
+        </a>
+        <a class="admin-side-link" data-tab="tags" href="#tags">
+          <span>标签</span>
+        </a>
+        <a class="admin-side-link" data-tab="about" href="#about">
+          <span>关于</span>
+        </a>
+      </div>
+      <div class="admin-side-section">
+        <div class="admin-side-label">DATA</div>
+        <a class="admin-side-link" data-tab="preview" href="#preview">
+          <span>JSON 预览</span>
+        </a>
+        <a class="admin-side-link" data-tab="help" href="#help">
+          <span>帮助</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- 主内容 -->
+    <main class="admin-main">
+
+      <!-- 主页信息（默认显示） -->
+      <section class="admin-section is-active" id="section-site">
+        <div class="admin-bar">
+          <div class="admin-bar-title">主页信息</div>
+        </div>
+        <div class="field-hint" style="margin-bottom: var(--sp-4);">
+          主站首页展示的站点信息。地区、时区选择后自动同步中英文。
+        </div>
+
+        <div class="field">
+          <label class="field-label">站点名</label>
+          <input class="field-input" id="sf_name" type="text">
+        </div>
+
+        <div class="field-grid">
+          <div class="field">
+            <label class="field-label">中文 tagline</label>
+            <input class="field-input" id="sf_tagline_zh" type="text">
+          </div>
+          <div class="field">
+            <label class="field-label">英文 tagline</label>
+            <input class="field-input" id="sf_tagline_en" type="text">
+          </div>
+        </div>
+
+        <div class="field-grid">
+          <div class="field">
+            <label class="field-label">状态 · 中文</label>
+            <input class="field-input" id="sf_status_zh" type="text" placeholder="近期有空接活">
+          </div>
+          <div class="field">
+            <label class="field-label">状态 · 英文</label>
+            <input class="field-input" id="sf_status_en" type="text" placeholder="Open to work">
+          </div>
+        </div>
+
+        <div class="field-grid">
+          <div class="field">
+            <label class="field-label">地区选择</label>
+            <select class="field-input" id="sf_region">
+              <option value="">— 选择地区 —</option>
+              <option value="cn">中国</option>
+              <option value="hk">中国香港</option>
+              <option value="tw">中国台湾</option>
+              <option value="jp">日本</option>
+              <option value="kr">韩国</option>
+              <option value="sg">新加坡</option>
+              <option value="us">美国</option>
+              <option value="uk">英国</option>
+              <option value="eu">欧洲</option>
+              <option value="other">其他</option>
+            </select>
+            <div class="field-hint">选择后自动填充中英文地区名</div>
+          </div>
+          <div class="field">
+            <label class="field-label">时区</label>
+            <select class="field-input" id="sf_timezone">
+              <option value="">— 选择时区 —</option>
+              <option value="GMT+8">GMT+8（北京/新加坡）</option>
+              <option value="GMT+9">GMT+9（东京/首尔）</option>
+              <option value="GMT+7">GMT+7（曼谷/雅加达）</option>
+              <option value="GMT+0">GMT+0（伦敦）</option>
+              <option value="GMT-5">GMT-5（纽约）</option>
+              <option value="GMT-8">GMT-8（洛杉矶）</option>
+              <option value="GMT+1">GMT+1（巴黎/柏林）</option>
+              <option value="GMT+10">GMT+10（悉尼）</option>
+            </select>
+            <div class="field-hint">主页会显示当前时区</div>
+          </div>
+        </div>
+
+        <div class="field-grid">
+          <div class="field">
+            <label class="field-label">在线时间</label>
+            <input class="field-input" id="sf_online_time" type="text" placeholder="周一-周五 19:00-22:00">
+            <div class="field-hint">主页会显示在线活跃时间段</div>
+          </div>
+          <div class="field">
+            <label class="field-label">SITE 链接（GitHub Pages）</label>
+            <input class="field-input" id="sf_site_url" type="text" placeholder="https://taumata-wwq.github.io/">
+            <div class="field-hint">顶栏 SITE ↗ 按钮指向的地址</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 作品列表 -->
+      <section class="admin-section" id="section-projects">
+        <div class="admin-bar">
+          <div class="admin-bar-title">作品列表</div>
+          <div class="admin-bar-actions">
+            <button class="btn-ghost" id="btnAddProject">+ 新增</button>
+          </div>
+        </div>
+        <div class="field-hint" style="margin-bottom: var(--sp-3);">
+          点击右侧编辑按钮在下方展开编辑面板；编辑时该条目会变为「保存编辑 / 取消编辑」按钮。
+        </div>
+        <div class="admin-list" id="projectsList"></div>
+
+        <!-- 编辑表单（默认隐藏，会被 JS 移到当前条目下方） -->
+        <div id="projectEditor" class="editor-panel" style="display:none;">
+          <div class="admin-bar-title" style="margin-bottom: var(--sp-4);">编辑作品</div>
+          <input type="hidden" id="pf_id">
+
+          <div class="field-grid">
+            <div class="field">
+              <label class="field-label">中文标题</label>
+              <input class="field-input" id="pf_title_zh" type="text">
+            </div>
+            <div class="field">
+              <label class="field-label">英文标题</label>
+              <input class="field-input" id="pf_title_en" type="text">
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label">中文描述</label>
+            <textarea class="field-textarea" id="pf_desc_zh"></textarea>
+            <div class="field-hint">空行分段；详情页会按段落渲染</div>
+          </div>
+          <div class="field">
+            <label class="field-label">英文描述</label>
+            <textarea class="field-textarea" id="pf_desc_en"></textarea>
+          </div>
+
+          <div class="field">
+            <label class="field-label">中文正文（详情页 body）</label>
+            <textarea class="field-textarea" id="pf_body_zh" style="min-height: 140px;"></textarea>
+            <div class="field-hint">创作过程、灵感来源等。空行分段。空则使用默认文案</div>
+          </div>
+          <div class="field">
+            <label class="field-label">英文正文</label>
+            <textarea class="field-textarea" id="pf_body_en" style="min-height: 140px;"></textarea>
+          </div>
+
+          <div class="field-grid">
+            <div class="field field--autocomplete">
+              <label class="field-label">标签（逗号分隔，支持中英文 ，）</label>
+              <input class="field-input" id="pf_tags" type="text" placeholder="Illustration, 2025" autocomplete="off">
+              <div id="pf_tags_ac" class="tag-autocomplete" style="display:none;"></div>
+            </div>
+            <div class="field">
+              <label class="field-label">时间（年月日时分）</label>
+              <input class="field-input" id="pf_datetime" type="datetime-local">
+              <div class="field-hint">新建时自动填当前时间；列表按时间倒序显示</div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label">作品图片集（多张）</label>
+            <div class="field-hint" style="margin-bottom: var(--sp-3);">
+              首张默认作为封面。点击「设为封面」可指定任意一张。拖拽左侧手柄可调整顺序。<br>
+              点击「+ 添加图片」从 <code>assets/images/</code> 选择已有图片，或上传新图片（自动以时间戳命名）。
+            </div>
+            <div id="imageList" class="image-list"></div>
+            <div class="image-actions image-actions--row">
+              <button class="btn-ghost" type="button" id="btnAddImagePath">+ 添加图片</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label">链接引用</label>
+            <div class="field-hint" style="margin-bottom: var(--sp-3);">
+              附加在作品详情页末尾的链接（如 GitHub 仓库、参考文章等）。可添加多个。
+            </div>
+            <div id="projectLinks" class="dynamic-list"></div>
+            <button class="btn-ghost" type="button" id="btnAddLink" style="margin-top: var(--sp-2);">+ 添加链接</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 笔记列表 -->
+      <section class="admin-section" id="section-notes">
+        <div class="admin-bar">
+          <div class="admin-bar-title">笔记列表</div>
+          <div class="admin-bar-actions">
+            <button class="btn-ghost" id="btnAddNote">+ 新增</button>
+          </div>
+        </div>
+        <div class="admin-list" id="notesList"></div>
+
+        <!-- 笔记编辑表单 -->
+        <div id="noteEditor" class="editor-panel" style="display:none;">
+          <div class="admin-bar-title" style="margin-bottom: var(--sp-4);">编辑笔记</div>
+          <input type="hidden" id="nf_id">
+
+          <div class="field-grid">
+            <div class="field">
+              <label class="field-label">中文标题</label>
+              <input class="field-input" id="nf_title_zh" type="text">
+            </div>
+            <div class="field">
+              <label class="field-label">英文标题</label>
+              <input class="field-input" id="nf_title_en" type="text">
+            </div>
+          </div>
+
+          <div class="field-grid">
+            <div class="field">
+              <label class="field-label">日期</label>
+              <input class="field-input" id="nf_date" type="text" placeholder="2026-06-20">
+            </div>
+            <div class="field field--autocomplete">
+              <label class="field-label">标签（逗号分隔）</label>
+              <input class="field-input" id="nf_tag" type="text" placeholder="色彩, 绘画, Tool ..." autocomplete="off">
+              <div id="nf_tag_ac" class="tag-autocomplete" style="display:none;"></div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label">中文正文 <span class="md-badge">Markdown</span></label>
+            <textarea class="field-textarea md-textarea" id="nf_excerpt_zh" style="min-height: 200px;"></textarea>
+            <div class="field-hint">支持 Markdown：# 标题 · **粗体** · *斜体* · [链接](url) · `代码` · - 列表 · &gt; 引用</div>
+          </div>
+          <div class="field">
+            <label class="field-label">英文正文 <span class="md-badge">Markdown</span></label>
+            <textarea class="field-textarea md-textarea" id="nf_excerpt_en" style="min-height: 200px;"></textarea>
+          </div>
+
+          <div class="field">
+            <label class="field-label">链接引用</label>
+            <div class="field-hint" style="margin-bottom: var(--sp-3);">
+              附加在笔记详情页末尾的链接。可添加多个。
+            </div>
+            <div id="noteLinks" class="dynamic-list"></div>
+            <button class="btn-ghost" type="button" id="btnAddLinkNote" style="margin-top: var(--sp-2);">+ 添加链接</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 标签管理 -->
+      <section class="admin-section" id="section-tags">
+        <div class="admin-bar">
+          <div class="admin-bar-title">标签管理</div>
+          <div class="admin-bar-actions">
+            <button class="btn-ghost" id="btnAddTag">+ 新增标签</button>
+            <button class="btn-ghost" id="btnSyncTags">同步作品/笔记中的新标签</button>
+          </div>
+        </div>
+        <div class="field-hint" style="margin-bottom: var(--sp-3);">
+          集中管理所有标签的中英文映射。编辑后自动同步到作品和笔记。点击标签可编辑，删除标签会从所有作品和笔记中移除。
+        </div>
+        <div id="tagsManager" class="tags-manager"></div>
+      </section>
+
+      <!-- 关于 -->
+      <section class="admin-section" id="section-about">
+        <div class="admin-bar">
+          <div class="admin-bar-title">关于</div>
+        </div>
+        <div class="field-hint" style="margin-bottom: var(--sp-3);">
+          关于页面的标题、档期、段落、技能标签和联系方式。
+        </div>
+
+        <div class="field-grid">
+          <div class="field">
+            <label class="field-label">标题 · 中文</label>
+            <input class="field-input" id="af_title_zh" type="text" placeholder="关于我">
+          </div>
+          <div class="field">
+            <label class="field-label">标题 · 英文</label>
+            <input class="field-input" id="af_title_en" type="text" placeholder="About Me">
+          </div>
+        </div>
+
+        <div class="field-grid">
+          <div class="field">
+            <label class="field-label">描述 · 中文</label>
+            <input class="field-input" id="af_desc_zh" type="text">
+          </div>
+          <div class="field">
+            <label class="field-label">描述 · 英文</label>
+            <input class="field-input" id="af_desc_en" type="text">
+          </div>
+        </div>
+
+        <!-- 档期/排期设置 -->
+        <div class="field schedule-field">
+          <label class="field-label">档期设置</label>
+          <div class="field-hint" style="margin-bottom: var(--sp-3);">
+            类似米画师等接稿平台的档期展示。显示在关于页个人介绍下方、技能上方。
+          </div>
+          <div class="field-grid field-grid--schedule">
+            <div class="field">
+              <label class="field-label-sm">档期状态</label>
+              <select class="field-input" id="af_schedule_status">
+                <option value="open">接稿中</option>
+                <option value="busy">繁忙/预约中</option>
+                <option value="closed">休息中</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="field-label-sm">可接数量</label>
+              <input class="field-input" id="af_schedule_slots" type="number" min="0" placeholder="3">
+            </div>
+            <div class="field">
+              <label class="field-label-sm">预计交稿周期</label>
+              <input class="field-input" id="af_schedule_turnaround" type="text" placeholder="7-14 天">
+            </div>
+          </div>
+          <div class="field-grid">
+            <div class="field">
+              <label class="field-label-sm">档期说明 · 中文</label>
+              <input class="field-input" id="af_schedule_note_zh" type="text" placeholder="详细说明档期、约稿流程等">
+            </div>
+            <div class="field">
+              <label class="field-label-sm">档期说明 · 英文</label>
+              <input class="field-input" id="af_schedule_note_en" type="text" placeholder="Details about commission process">
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">段落</label>
+          <div id="aboutParagraphs" class="dynamic-list"></div>
+          <button class="btn-ghost" type="button" id="btnAddParagraph" style="margin-top: var(--sp-2);">+ 添加段落</button>
+        </div>
+
+        <div class="field">
+          <label class="field-label">技能标签</label>
+          <div id="aboutSkills" class="dynamic-list dynamic-list--inline"></div>
+          <button class="btn-ghost" type="button" id="btnAddSkill" style="margin-top: var(--sp-2);">+ 添加技能</button>
+        </div>
+
+        <div class="field">
+          <label class="field-label">联系方式</label>
+          <div id="aboutContacts" class="dynamic-list"></div>
+          <button class="btn-ghost" type="button" id="btnAddContact" style="margin-top: var(--sp-2);">+ 添加联系方式</button>
+        </div>
+      </section>
+
+      <!-- JSON 预览 -->
+      <section class="admin-section" id="section-preview">
+        <div class="admin-bar">
+          <div class="admin-bar-title">JSON 预览</div>
+          <div class="admin-bar-actions">
+            <button class="btn-ghost" id="btnExport">导出文件</button>
+            <button class="btn-ghost" id="btnImport">导入文件</button>
+            <input type="file" id="fileImport" accept="application/json" style="display:none">
+            <button class="btn-ghost" id="btnClearDraft">清除草稿</button>
+          </div>
+        </div>
+        <div class="field-hint" style="margin-bottom: var(--sp-3);">
+          编辑后自动保存到 projects.json（http:// 模式）和本机草稿。此处可查看完整数据。
+        </div>
+        <pre class="code-block" id="jsonPreview">{}</pre>
+      </section>
+
+      <!-- 帮助 -->
+      <section class="admin-section" id="section-help">
+        <div class="admin-bar">
+          <div class="admin-bar-title">帮助</div>
+        </div>
+
+        <div class="help-section">
+          <h3 class="help-title">快速开始</h3>
+          <ol class="help-list">
+            <li>在项目根目录运行 <code>python serve.py</code></li>
+            <li>浏览器访问 <code>http://127.0.0.1:8000/admin.html</code></li>
+            <li>编辑各项内容，焦点离开输入框后自动保存</li>
+            <li>主页刷新即可看到更新（同源下实时同步）</li>
+          </ol>
+        </div>
+
+        <div class="help-section">
+          <h3 class="help-title">自动保存机制</h3>
+          <p class="help-text">编辑任何字段后，焦点离开输入框（blur）或上传图片完成时，会自动保存到 projects.json 并同步本机草稿。顶栏右侧显示保存状态。</p>
+        </div>
+
+        <div class="help-section">
+          <h3 class="help-title">图片管理</h3>
+          <ul class="help-list">
+            <li>点击「+ 添加图片」打开图片选择器</li>
+            <li>可从 <code>assets/images/</code> 选择已有图片</li>
+            <li>可上传新图片，自动以时间戳命名保存到 <code>assets/images/</code></li>
+            <li>首张图片默认作为封面，可点击「设为封面」更改</li>
+          </ul>
+        </div>
+
+        <div class="help-section">
+          <h3 class="help-title">笔记 Markdown 语法</h3>
+          <ul class="help-list">
+            <li><code># 标题</code> / <code>## 副标题</code> / <code>### 小标题</code></li>
+            <li><code>**粗体**</code> / <code>*斜体*</code></li>
+            <li><code>[链接文字](https://...)</code></li>
+            <li><code>`行内代码`</code> / <code>```代码块```</code></li>
+            <li><code>- 无序列表</code> / <code>1. 有序列表</code></li>
+            <li><code>&gt; 引用</code> / <code>--- 分割线</code></li>
+          </ul>
+        </div>
+
+        <div class="help-section">
+          <h3 class="help-title">同步到 GitHub Pages</h3>
+          <ul class="help-list">
+            <li>方式一（推荐）：本地 <code>python serve.py</code> → 编辑保存 → <code>git add . && git commit && git push</code></li>
+            <li>方式二：GitHub 网页打开 <code>assets/data/projects.json</code> → 编辑铅笔 → 粘贴 JSON 后提交</li>
+            <li>方式三：访问 <code>github.dev</code> 仓库地址，浏览器内 VS Code 编辑提交</li>
+          </ul>
+        </div>
+
+        <div class="help-section help-section--warn">
+          <h3 class="help-title">注意事项</h3>
+          <ul class="help-list">
+            <li>主页和后台请使用同一地址访问（都用 <code>127.0.0.1:8000</code> 或都用 <code>localhost:8000</code>），否则 localStorage 草稿无法跨 origin 同步</li>
+            <li>直接用 <code>file://</code> 协议打开 admin.html 仅能保存草稿到本机，无法写入 projects.json</li>
+            <li>导出文件仅作为备份手段，正常使用无需手动导出</li>
+          </ul>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- 模态框（替代 prompt） -->
+  <div id="modalOverlay" class="modal-overlay" style="display:none;">
+    <div class="modal-dialog" role="dialog" aria-modal="true">
+      <div id="modalTitle" class="modal-title">请输入</div>
+      <input id="modalInput" class="field-input modal-input" type="text">
+      <div class="modal-actions">
+        <button class="btn-ghost" id="modalCancel" type="button">取消</button>
+        <button class="btn-primary" id="modalOk" type="button">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="assets/js/admin.js"></script>
+</body>
+</html>

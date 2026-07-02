@@ -1,0 +1,122 @@
+/* ============================================================
+   picker.css — SAI/CSP 风格浮动色板
+   ============================================================ */
+
+.colorpicker {
+  position: fixed;
+  top: calc(var(--topbar-h) + 4px);
+  right: var(--sp-4);
+  z-index: 100;
+  width: 232px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
+  padding: var(--sp-3);
+  display: none;
+  box-shadow: var(--shadow-2);
+  user-select: none;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity var(--dur) var(--ease-out),
+              transform var(--dur) var(--ease-out);
+}
+.colorpicker.is-open {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+[data-theme="dark"] .colorpicker { box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+
+.picker-main {
+  display: grid;
+  grid-template-columns: 1fr 16px;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+}
+
+/* SV 方块 */
+.sv-square {
+  position: relative;
+  height: 140px;
+  background-color: hsl(var(--hue), 100%, 50%);
+  background-image:
+    linear-gradient(to top, #000, transparent),
+    linear-gradient(to right, #fff, transparent);
+  cursor: crosshair;
+  border: 1px solid var(--border);
+}
+.sv-pointer {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(0,0,0,0.3);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+/* 色相条 */
+.hue-bar {
+  position: relative;
+  height: 140px;
+  background: linear-gradient(to bottom,
+    hsl(0, 100%, 50%),
+    hsl(60, 100%, 50%),
+    hsl(120, 100%, 50%),
+    hsl(180, 100%, 50%),
+    hsl(240, 100%, 50%),
+    hsl(300, 100%, 50%),
+    hsl(360, 100%, 50%));
+  cursor: ns-resize;
+  border: 1px solid var(--border);
+}
+.hue-pointer {
+  position: absolute;
+  left: -2px;
+  right: -2px;
+  height: 4px;
+  background: #fff;
+  border: 1px solid #000;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* 底部 */
+.picker-foot {
+  display: grid;
+  grid-template-columns: 24px 1fr auto;
+  gap: var(--sp-2);
+  align-items: center;
+}
+.picker-swatch {
+  width: 24px;
+  height: 24px;
+  background: var(--accent);
+  border: 1px solid var(--border-strong);
+}
+.picker-hex {
+  padding: 6px 8px;
+  background: var(--bg);
+  border: 1px solid var(--border-strong);
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--fg);
+  outline: none;
+  text-transform: uppercase;
+  min-width: 0;
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+.picker-hex:focus { border-color: var(--fg); }
+.picker-reset {
+  padding: 6px 10px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--fg-muted);
+  text-transform: uppercase;
+  border: 1px solid var(--border-strong);
+  background: transparent;
+  transition: background-color var(--dur-fast) var(--ease-out),
+              color var(--dur-fast) var(--ease-out);
+}
+.picker-reset:hover { background: var(--fg); color: var(--bg); }

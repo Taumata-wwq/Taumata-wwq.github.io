@@ -1,0 +1,637 @@
+{
+  "tags": [
+    {
+      "zh": "绘画",
+      "en": "Drawing"
+    },
+    {
+      "zh": "手书",
+      "en": "MAD"
+    },
+    {
+      "zh": "晕晕电波症候群",
+      "en": "Yunyun Syndrome!? Rhythm Psychosis"
+    },
+    {
+      "zh": "头像",
+      "en": "Avatar"
+    },
+    {
+      "zh": "知世",
+      "en": "Tomoyo"
+    },
+    {
+      "zh": "无偿",
+      "en": "Free"
+    },
+    {
+      "zh": "练习",
+      "en": "Practice"
+    },
+    {
+      "zh": "色彩",
+      "en": "Color"
+    },
+    {
+      "zh": "梗图",
+      "en": "meme"
+    },
+    {
+      "zh": "孤独摇滚",
+      "en": "Bocchi the Rock!"
+    },
+    {
+      "zh": "网站",
+      "en": "web"
+    },
+    {
+      "zh": "编程",
+      "en": "coding"
+    },
+    {
+      "zh": "笔记",
+      "en": "note"
+    },
+    {
+      "zh": "魔卡少女樱",
+      "en": "Cardcaptor Sakura"
+    },
+    {
+      "zh": "崩坏：星穹铁道",
+      "en": "Honkai: Star Rail"
+    },
+    {
+      "zh": "守护甜心",
+      "en": "Shugo Chara!"
+    },
+    {
+      "zh": "OC",
+      "en": "OC"
+    },
+    {
+      "zh": "茶绘",
+      "en": ""
+    },
+    {
+      "zh": "虚拟歌姬",
+      "en": ""
+    }
+  ],
+  "site": {
+    "name": "Taumata!",
+    "tagline": {
+      "zh": "喜欢画画的摸鱼人...",
+      "en": "Someone who loves to draw and slack off..."
+    },
+    "status": {
+      "zh": "摸鱼人.jpg",
+      "en": "Open..."
+    },
+    "location": {
+      "zh": "中国",
+      "en": "China"
+    },
+    "region": "cn",
+    "timezone": "GMT+8",
+    "onlineTime": "19:00-22:00",
+    "siteUrl": "https://taumata-wwq.github.io/"
+  },
+  "projects": [
+    {
+      "id": 1,
+      "title": {
+        "zh": "晕晕天国地狱国",
+        "en": "Yunyuntengoku Jigokugoku"
+      },
+      "desc": {
+        "zh": "晕晕天国地狱国封面图",
+        "en": "“Yunyuntengoku Jigokugoku” cover art"
+      },
+      "body": {
+        "zh": "\n",
+        "en": ""
+      },
+      "tags": [
+        "绘画",
+        "手书",
+        "晕晕电波症候群"
+      ],
+      "datetime": "2026-04-24 00:00",
+      "year": "2026",
+      "image": "assets/images/20260702161626.png",
+      "images": [
+        {
+          "url": "assets/images/20260702161626.png",
+          "caption": null,
+          "isCover": true
+        }
+      ],
+      "links": [
+        {
+          "name": "本家",
+          "url": "https://www.youtube.com/watch?v=eTplxWaAD8o"
+        },
+        {
+          "name": "模板",
+          "url": "https://www.bilibili.com/video/BV1c7YxzCEo3"
+        },
+        {
+          "name": "晕晕天国地狱国",
+          "url": "https://www.bilibili.com/video/BV1KeoeB7EUk"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": {
+        "zh": "知世",
+        "en": "Tomoyo"
+      },
+      "desc": {
+        "zh": "拍照.jpg",
+        "en": "Take photos"
+      },
+      "tags": [
+        "头像",
+        "魔卡少女樱",
+        "练习"
+      ],
+      "datetime": "2024-04-10 21:00",
+      "year": "2024",
+      "image": "assets/images/20260702163013.jpg",
+      "images": [
+        {
+          "url": "assets/images/20260702163013.jpg",
+          "caption": null,
+          "isCover": true
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": {
+        "zh": "无偿",
+        "en": "Free"
+      },
+      "desc": {
+        "zh": "",
+        "en": ""
+      },
+      "tags": [
+        "无偿",
+        "练习",
+        "绘画",
+        "OC"
+      ],
+      "datetime": "2024-03-22 15:00",
+      "year": "2024",
+      "image": "assets/images/20260702065652.jpg",
+      "images": [
+        {
+          "url": "assets/images/20260702065652.jpg",
+          "caption": null,
+          "isCover": true
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": {
+        "zh": "无偿",
+        "en": "Free"
+      },
+      "desc": {
+        "zh": "",
+        "en": ""
+      },
+      "tags": [
+        "无偿",
+        "绘画",
+        "练习",
+        "OC"
+      ],
+      "datetime": "2024-10-08 11:00",
+      "year": "2024",
+      "image": "assets/images/20260702062831.jpg",
+      "images": [
+        {
+          "url": "assets/images/20260702062831.jpg",
+          "caption": null,
+          "isCover": true
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": {
+        "zh": "大黑塔",
+        "en": "The Herta"
+      },
+      "desc": {
+        "zh": "",
+        "en": ""
+      },
+      "tags": [
+        "崩坏：星穹铁道",
+        "绘画"
+      ],
+      "datetime": "2024-12-29 22:00",
+      "year": "2024",
+      "image": "assets/images/20260702162950.jpg",
+      "images": [
+        {
+          "url": "assets/images/20260702162950.jpg",
+          "caption": null,
+          "isCover": true
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": {
+        "zh": "OC",
+        "en": "OC"
+      },
+      "desc": {
+        "zh": "",
+        "en": ""
+      },
+      "tags": [
+        "OC",
+        "绘画"
+      ],
+      "datetime": "2025-03-29 16:00",
+      "year": "2025",
+      "image": "assets/images/20260702162922.jpg",
+      "images": [
+        {
+          "url": "assets/images/20260702162922.jpg",
+          "caption": null,
+          "isCover": true
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": {
+        "zh": "中山千代子",
+        "en": "Chiyoko Nakayama"
+      },
+      "desc": {
+        "zh": "pixiv上神秘用户让我画的一张无偿（）",
+        "en": "A free commission from a mysterious user on Pixiv."
+      },
+      "tags": [
+        "无偿",
+        "绘画",
+        "守护甜心"
+      ],
+      "datetime": "2025-03-28 19:00",
+      "year": "2025",
+      "image": "assets/images/20260702162937.jpg",
+      "images": [
+        {
+          "url": "assets/images/20260702162937.jpg",
+          "caption": null,
+          "isCover": true
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": {
+        "zh": "晕晕 x 小Q",
+        "en": "yunyun & Q-chan"
+      },
+      "desc": {
+        "zh": "梗图×1",
+        "en": "Meme ×1"
+      },
+      "tags": [
+        "晕晕电波症候群",
+        "梗图",
+        "绘画"
+      ],
+      "datetime": "2025-12-06 03:00",
+      "year": "2025",
+      "image": "assets/images/20260702161633.jpg",
+      "images": [
+        {
+          "url": "assets/images/20260702161633.jpg",
+          "caption": null,
+          "isCover": true
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "title": {
+        "zh": "无偿",
+        "en": "FREE"
+      },
+      "desc": {
+        "zh": "给群友的无偿",
+        "en": "A freebie for the group members."
+      },
+      "tags": [
+        "绘画",
+        "无偿",
+        "OC"
+      ],
+      "datetime": "2025-11-25 01:00",
+      "year": "2025",
+      "image": "assets/images/20260702162901.png",
+      "images": [
+        {
+          "url": "assets/images/20260702162901.png",
+          "caption": null,
+          "isCover": true
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "title": {
+        "zh": "广井菊里",
+        "en": "Hiroi Kikuri"
+      },
+      "desc": {
+        "zh": "学习作",
+        "en": "Study"
+      },
+      "tags": [
+        "孤独摇滚",
+        "绘画",
+        "练习"
+      ],
+      "datetime": "2024-03-28 23:00",
+      "year": "2024",
+      "image": "assets/images/20260702163140.jpg",
+      "images": [
+        {
+          "url": "assets/images/20260702163140.jpg",
+          "caption": null,
+          "isCover": true
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "title": {
+        "zh": "山田凉",
+        "en": "Yamada Ryō"
+      },
+      "desc": {
+        "zh": "学习作",
+        "en": "Study"
+      },
+      "tags": [
+        "孤独摇滚",
+        "绘画",
+        "练习"
+      ],
+      "datetime": "2024-03-09 20:00",
+      "year": "2024",
+      "image": "assets/images/20260702163202.jpg",
+      "images": [
+        {
+          "url": "assets/images/20260702163202.jpg",
+          "caption": null,
+          "isCover": true
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "title": {
+        "zh": "茶绘",
+        "en": "e-chat"
+      },
+      "desc": {
+        "zh": "和群友在magma的茶绘~",
+        "en": "E-chat with group friends on Magma~"
+      },
+      "tags": [
+        "茶绘",
+        "绘画",
+        "OC"
+      ],
+      "datetime": "2026-06-21 23:00",
+      "year": "2026",
+      "image": "assets/images/20260702165848.png",
+      "images": [
+        {
+          "url": "assets/images/20260702165848.png",
+          "caption": null,
+          "isCover": true
+        }
+      ],
+      "links": [
+        {
+          "name": "magma",
+          "url": "https://magma.com/d/MPwO09H8BQ"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "title": {
+        "zh": "茶绘",
+        "en": "E-chat"
+      },
+      "desc": {
+        "zh": "和群友茶绘",
+        "en": "E-chat with group friends~"
+      },
+      "tags": [
+        "茶绘",
+        "绘画",
+        "OC"
+      ],
+      "datetime": "2026-06-20 22:00",
+      "year": "2026",
+      "image": "assets/images/20260702170605.png",
+      "images": [
+        {
+          "url": "assets/images/20260702170605.png",
+          "caption": null,
+          "isCover": true
+        },
+        {
+          "url": "assets/images/20260702170614.png",
+          "caption": null,
+          "isCover": false
+        }
+      ],
+      "links": [
+        {
+          "name": "magma",
+          "url": "https://magma.com/d/1Oe2SozUWD"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "title": {
+        "zh": "茶绘",
+        "en": "E-chat"
+      },
+      "desc": {
+        "zh": "和群友的茶绘！",
+        "en": "E-chat with group friends~"
+      },
+      "tags": [
+        "茶绘",
+        "绘画",
+        "虚拟歌姬"
+      ],
+      "datetime": "2025-12-31 01:00",
+      "year": "2025",
+      "image": "assets/images/20260702171241.png",
+      "images": [
+        {
+          "url": "assets/images/20260702171241.png",
+          "caption": null,
+          "isCover": true
+        }
+      ],
+      "links": [
+        {
+          "name": "magma",
+          "url": "https://magma.com/d/P3g6MDuhlz"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "title": {
+        "zh": "",
+        "en": ""
+      },
+      "desc": {
+        "zh": "",
+        "en": ""
+      },
+      "tags": [],
+      "datetime": "2026-07-02 17:26",
+      "year": "2026"
+    }
+  ],
+  "notes": [
+    {
+      "id": "n1782952185526",
+      "date": "2026-07-02",
+      "title": {
+        "zh": "制作了个人网站！",
+        "en": "I built a personal website!"
+      },
+      "tags": [
+        "网站",
+        "编程"
+      ],
+      "excerpt": {
+        "zh": "部署在github上~",
+        "en": "At GitHub~"
+      },
+      "links": [
+        {
+          "name": "链接地址",
+          "url": "https://taumata-wwq.github.io/"
+        }
+      ]
+    },
+    {
+      "id": "n1",
+      "date": "2026-06-20",
+      "title": {
+        "zh": "关于色彩的笔记",
+        "en": "Notes on color"
+      },
+      "tags": [
+        "色彩",
+        "笔记"
+      ],
+      "excerpt": {
+        "zh": "测试",
+        "en": "Test"
+      }
+    }
+  ],
+  "about": {
+    "title": {
+      "zh": "关于",
+      "en": "About"
+    },
+    "desc": {
+      "en": "Slackfruit on the slackfruit tree, under the slackfruit tree, you and me.",
+      "zh": "摸鱼树上摸鱼果，摸鱼树下你和我"
+    },
+    "schedule": {
+      "status": "closed",
+      "slots": 0,
+      "turnaround": "5-7 天",
+      "note": {
+        "zh": "详情请私信沟通",
+        "en": "Please DM for details"
+      }
+    },
+    "paragraphs": [
+      {
+        "zh": "喜欢看好看的图片，欣赏好看的作品。",
+        "en": "I love looking at pretty pictures and appreciating beautiful works."
+      },
+      {
+        "zh": "虽然爱玩很多游戏，但是由于比较懒所以目前只玩崩三、崩铁、终末地了...",
+        "en": "Even though I like playing lots of games, I'm kind of lazy, so at the moment I'm only playing Honkai Impact 3rd, Honkai: Star Rail, and Arknights: Endfield..."
+      },
+      {
+        "zh": "喜欢很多番剧和角色，诸如一些少女乐队番、轻百番、异世界题材我大概都蛮喜欢的~",
+        "en": "I'm into a lot of anime and characters—stuff like girl band anime, light yuri / CGDCT shows, and isekai, I'm generally a fan of all those~"
+      },
+      {
+        "zh": "不喜欢看恐怖的东西，有点胆小说是...",
+        "en": "I don't like scary things; I'm a bit of a scaredy-cat, you could say..."
+      },
+      {
+        "zh": "由于有些晕3D所以也很难去玩一些3D的游戏，诸如第一人称设计、大型3A都玩不太了好可惜...",
+        "en": "I also get a little motion sickness from 3D games, so it's hard for me to play 3D titles—like first-person shooters or big AAA games, which is such a shame..."
+      },
+      {
+        "zh": "不过，欢迎与我分享有趣的事情或者美图，虽然我是INFP有些社恐，但我还是会与大家开开心心地交流的！",
+        "en": "But still, feel free to share fun things or pretty pictures with me~ Even though I'm an INFP with a bit of social anxiety, I'll still happily chat with everyone!"
+      }
+    ],
+    "skills": [
+      "sai2",
+      "csp",
+      "vibe coding",
+      "obs?"
+    ],
+    "contacts": [
+      {
+        "label": "QQ GROUP",
+        "value": "466468427"
+      },
+      {
+        "label": "EMAIL",
+        "value": "taumata.wwq@qq.com"
+      },
+      {
+        "label": "GITHUB",
+        "value": "https://github.com/Taumata-wwq"
+      },
+      {
+        "label": "BILIBILI",
+        "value": "https://space.bilibili.com/24176056"
+      },
+      {
+        "label": "X@Taumata_wwq",
+        "value": "https://x.com/Taumata_wwq"
+      },
+      {
+        "label": "PIXIV",
+        "value": "https://www.pixiv.net/users/77206186"
+      }
+    ]
+  }
+}
