@@ -39,7 +39,8 @@ async function loadSiteData() {
         site: Object.assign({}, remote.site || {}, d.site || {}),
         about: d.about || remote.about || {},
         projects: Array.isArray(d.projects) ? d.projects : (remote.projects || []),
-        notes: Array.isArray(d.notes) ? d.notes : (remote.notes || [])
+        notes: Array.isArray(d.notes) ? d.notes : (remote.notes || []),
+        tags: Array.isArray(d.tags) ? d.tags : (remote.tags || [])
       };
     }
   } catch (e) {}
@@ -63,7 +64,8 @@ function getCover(p) {
   return p.image || '';
 }
 
-/* 将图片 URL 转为缩略图 URL（assets/images/xxx.jpg → assets/images/thumb/xxx.jpg） */
+/* 将图片 URL 转为缩略图 URL（assets/images/xxx.png → assets/images/thumb/xxx.jpg）
+   缩略图统一保存为 .jpg 格式 */
 function toThumbUrl(url) {
   if (!url) return url;
   /* 仅对 assets/images/ 下的图片生效，避免影响外部 URL */
@@ -72,7 +74,10 @@ function toThumbUrl(url) {
   const rest = url.slice(prefix.length);
   /* 已经是 thumb/ 路径则不再转换 */
   if (rest.indexOf('thumb/') === 0) return url;
-  return prefix + 'thumb/' + rest;
+  /* 统一替换扩展名为 .jpg（缩略图生成时统一转为 jpg） */
+  const dotIdx = rest.lastIndexOf('.');
+  const name = dotIdx > 0 ? rest.slice(0, dotIdx) : rest;
+  return prefix + 'thumb/' + name + '.jpg';
 }
 
 /* 取作品时间（兼容 year/datetime 字段） */
@@ -1319,6 +1324,16 @@ async function showTagPopover(anchorEl, tagText, lang) {
   /* 关闭按钮 */
   const closeBtn = popover.querySelector('.tag-popover-close');
   if (closeBtn) closeBtn.addEventListener('click', hideTagPopover);
+
+  /* 滚轮左右滚动：在相关作品区域上滚动滚轮时，转为横向滚动 */
+  const worksBox = popover.querySelector('.tag-popover-works');
+  if (worksBox) {
+    worksBox.addEventListener('wheel', (e) => {
+      if (e.deltaY === 0) return;
+      e.preventDefault();
+      worksBox.scrollLeft += e.deltaY;
+    }, { passive: false });
+  }
 }
 
 export function initRouter() {

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="light">
+<html lang="zh-CN" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,7 +20,7 @@
       try {
         var KEY = 'taumata.theme.v1';
         var DEFAULT_RGB = '255,107,53';
-        var mode = 'light';
+        var mode = 'dark';
         var rgb = DEFAULT_RGB;
         var stored = localStorage.getItem(KEY);
         if (stored) {
@@ -334,7 +334,7 @@
           </div>
         </div>
         <div class="field-hint" style="margin-bottom: var(--sp-3);">
-          集中管理所有标签的中英文映射。编辑后自动同步到作品和笔记。点击标签可编辑，删除标签会从所有作品和笔记中移除。
+          集中管理所有标签的中英文映射。点击标签展开编辑，失焦自动保存；再次点击标签或点击空白处收起。删除标签会从所有作品和笔记中移除。
         </div>
         <div id="tagsManager" class="tags-manager"></div>
       </section>

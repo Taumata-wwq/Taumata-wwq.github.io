@@ -406,9 +406,6 @@ function renderTagEditPanel(item, idx) {
           <textarea class="field-input md-textarea" id="te_desc_en_${idx}" rows="2" placeholder="英文介绍（可选）" data-tag-field>${escapeHtml(desc.en || '')}</textarea>
         </div>
       </div>
-      <div class="tag-edit-actions">
-        <button class="btn-ghost" data-tag-close>收起</button>
-      </div>
     </div>
   `;
 }
@@ -2028,7 +2025,7 @@ function importJson(file) {
 }
 
 /* ---------- Tab 切换 ---------- */
-/* 支持: site / projects / notes / about / preview / help */
+/* 支持: site / projects / notes / tags / about / preview / help */
 function switchTab(name) {
   qall('.admin-side-link').forEach((link) => {
     link.classList.toggle('is-active', link.dataset.tab === name);
@@ -2036,6 +2033,13 @@ function switchTab(name) {
   qall('.admin-section').forEach((sec) => {
     sec.classList.toggle('is-active', sec.id === 'section-' + name);
   });
+  /* 切换时刷新对应面板，确保显示最新数据 */
+  if (name === 'tags') renderTagsManager();
+  else if (name === 'projects') safeRenderProjectsList();
+  else if (name === 'notes') safeRenderNotesList();
+  else if (name === 'preview') renderJsonPreview();
+  else if (name === 'about') renderAboutForm();
+  else if (name === 'site') renderSiteForm();
 }
 
 /* ---------- 明暗切换 ---------- */
@@ -2213,7 +2217,7 @@ function bindEvents() {
   /* 关于信息字段失焦同步 */
   bindAboutFields();
 
-  /* 标签管理：新增 / 同步 / 编辑 / 删除 / 收起（事件委托） */
+  /* 标签管理：新增 / 同步 / 编辑 / 删除（事件委托） */
   const addTagBtn = $('btnAddTag');
   if (addTagBtn) addTagBtn.addEventListener('click', addTagItem);
   const syncTagsBtn = $('btnSyncTags');
@@ -2221,18 +2225,6 @@ function bindEvents() {
   const tagsMgr = $('tagsManager');
   if (tagsMgr) {
     tagsMgr.addEventListener('click', async (e) => {
-      /* 收起按钮：先保存再收起 */
-      const closeBtn = e.target.closest('[data-tag-close]');
-      if (closeBtn) {
-        e.stopPropagation();
-        const panel = closeBtn.closest('[data-tag-panel]');
-        if (panel) {
-          const idx = parseInt(panel.dataset.tagPanel, 10);
-          if (!isNaN(idx)) saveTagEdit(idx, { close: true });
-          else { editingTagIdx = -1; renderTagsManager(); }
-        }
-        return;
-      }
       /* 删除按钮 */
       const delBtn = e.target.closest('[data-tag-del]');
       if (delBtn) {

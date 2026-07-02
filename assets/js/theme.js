@@ -7,7 +7,7 @@ import { DEFAULT_LANG, applyLang, DICT } from './i18n.js';
 export const KEY = 'taumata.theme.v1';
 export const LANG_KEY = 'taumata.lang.v1';
 export const DEFAULT_RGB = '255,107,53';
-export const DEFAULT_MODE = 'light';
+export const DEFAULT_MODE = 'dark';
 
 export const state = {
   mode: DEFAULT_MODE,

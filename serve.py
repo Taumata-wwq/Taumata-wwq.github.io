@@ -165,6 +165,7 @@ class Handler(SimpleHTTPRequestHandler):
     @staticmethod
     def _make_thumbnail(filepath):
         if not HAS_PIL:
+            print('[thumb] PIL 未安装，跳过缩略图生成')
             return None
         try:
             img = Image.open(filepath)
@@ -180,8 +181,10 @@ class Handler(SimpleHTTPRequestHandler):
             if thumb.mode != 'RGB':
                 thumb = thumb.convert('RGB')
             thumb.save(thumb_path, 'JPEG', quality=80, optimize=True)
+            print(f'[thumb] 已生成: {os.path.basename(thumb_path)} ({thumb.size[0]}x{thumb.size[1]})')
             return thumb_path
-        except Exception:
+        except Exception as e:
+            print(f'[thumb] 生成失败 {filepath}: {e}')
             return None
 
     # ---------- 工具方法 ----------
@@ -207,9 +210,14 @@ class Handler(SimpleHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
-        # 静态资源缓存：图片/CSS/JS 缓存 7 天，projects.json 不缓存
+        # 静态资源缓存策略：
+        # - 图片（时间戳命名，永不改变）→ 缓存 30 天 + immutable
+        # - CSS/JS（可能更新）→ 缓存 7 天
+        # - projects.json / API → 不缓存
         path = urlparse(self.path).path.lower()
-        if any(path.endswith(ext) for ext in ('.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.bmp', '.avif', '.css', '.js')):
+        if any(path.endswith(ext) for ext in ('.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.bmp', '.avif')):
+            self.send_header('Cache-Control', 'public, max-age=2592000, immutable')
+        elif any(path.endswith(ext) for ext in ('.css', '.js')):
             self.send_header('Cache-Control', 'public, max-age=604800')
         elif path.endswith('projects.json') or path.startswith('/api/'):
             self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate')

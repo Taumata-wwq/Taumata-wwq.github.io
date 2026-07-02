@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="light">
+<html lang="zh-CN" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,15 +26,13 @@
         var KEY = 'taumata.theme.v1';
         var LANG_KEY = 'taumata.lang.v1';
         var DEFAULT_RGB = '255,107,53';
-        var mode = 'light';
+        var mode = 'dark';
         var rgb = DEFAULT_RGB;
         var stored = localStorage.getItem(KEY);
         if (stored) {
           var cfg = JSON.parse(stored);
           if (cfg.mode === 'light' || cfg.mode === 'dark') mode = cfg.mode;
           if (typeof cfg.accent_rgb === 'string' && /^\d{1,3},\d{1,3},\d{1,3}$/.test(cfg.accent_rgb)) rgb = cfg.accent_rgb;
-        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-          mode = 'dark';
         }
         var root = document.documentElement;
         root.setAttribute('data-theme', mode);
@@ -46,7 +44,7 @@
         if (lang !== 'zh' && lang !== 'en') lang = 'zh';
         root.setAttribute('lang', lang === 'zh' ? 'zh-CN' : 'en');
       } catch (e) {
-        document.documentElement.setAttribute('data-theme', 'light');
+        document.documentElement.setAttribute('data-theme', 'dark');
       }
     })();
   </script>
