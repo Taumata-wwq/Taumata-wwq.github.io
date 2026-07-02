@@ -3,8 +3,9 @@
 Taumata 本地开发服务器
 - 静态文件服务（支持 ES module）
 - POST /api/save  → 直接写入 projects.json
-- GET  /api/list-images → 列出 assets/images/ 中的图片
-- POST /api/upload-image → 保存外部图片到 assets/images/（时间戳命名）
+- GET  /api/list-images → 列出 assets/images/ 中的原图（排除 thumb/ 子目录）
+- POST /api/upload-image → 保存外部图片到 assets/images/（时间戳命名）并自动生成缩略图
+- POST /api/delete-image → 删除原图及对应缩略图
 """
 
 import json
@@ -14,10 +15,18 @@ import time
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from urllib.parse import urlparse
 
+try:
+    from PIL import Image
+    HAS_PIL = True
+except ImportError:
+    HAS_PIL = False
+
 PORT = 8000
 ROOT = os.path.dirname(os.path.abspath(__file__))
 DATA_FILE = os.path.join(ROOT, 'assets', 'data', 'projects.json')
 IMG_DIR = os.path.join(ROOT, 'assets', 'images')
+THUMB_DIR = os.path.join(IMG_DIR, 'thumb')
+THUMB_WIDTH = 600
 IMG_EXT = {'.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.bmp', '.avif'}
 
 
@@ -32,6 +41,8 @@ class Handler(SimpleHTTPRequestHandler):
             self._handle_save()
         elif path == '/api/upload-image':
             self._handle_upload()
+        elif path == '/api/delete-image':
+            self._handle_delete()
         else:
             self.send_error(404)
 
@@ -56,17 +67,22 @@ class Handler(SimpleHTTPRequestHandler):
         except Exception as e:
             self._json_err(500, str(e))
 
-    # ---------- 列出图片 ----------
+    # ---------- 列出图片（排除 thumb 子目录，按名称倒序） ----------
     def _handle_list_images(self):
         images = []
         if os.path.isdir(IMG_DIR):
-            for name in sorted(os.listdir(IMG_DIR)):
+            for name in os.listdir(IMG_DIR):
+                full = os.path.join(IMG_DIR, name)
+                if not os.path.isfile(full):
+                    continue  # 跳过子目录（thumb/）
                 ext = os.path.splitext(name)[1].lower()
                 if ext in IMG_EXT:
                     images.append(name)
+        # 按名称倒序（新上传的时间戳更大，排在前）
+        images.sort(reverse=True)
         self._json_ok({'images': images})
 
-    # ---------- 上传图片 ----------
+    # ---------- 上传图片（同时生成缩略图） ----------
     def _handle_upload(self):
         length = int(self.headers.get('Content-Length', 0))
         body = self.rfile.read(length)
@@ -98,11 +114,75 @@ class Handler(SimpleHTTPRequestHandler):
 
         with open(filepath, 'wb') as f:
             f.write(body)
+
+        # 自动生成缩略图
+        thumb_path = self._make_thumbnail(filepath)
+
         self._json_ok({
             'ok': True,
             'path': f'assets/images/{filename}',
-            'filename': filename
+            'filename': filename,
+            'thumb': f'assets/images/thumb/{os.path.splitext(filename)[0]}.jpg' if thumb_path else None
         })
+
+    # ---------- 删除图片（原图 + 缩略图） ----------
+    def _handle_delete(self):
+        length = int(self.headers.get('Content-Length', 0))
+        body = self.rfile.read(length)
+        try:
+            payload = json.loads(body)
+            filename = payload.get('filename', '').strip()
+            if not filename:
+                self._json_err(400, 'filename 不能为空')
+                return
+            # 安全检查：禁止路径穿越
+            if '/' in filename or '\\' in filename or '..' in filename:
+                self._json_err(400, '非法文件名')
+                return
+            ext = os.path.splitext(filename)[1].lower()
+            if ext not in IMG_EXT:
+                self._json_err(400, '不支持的文件类型')
+                return
+            filepath = os.path.join(IMG_DIR, filename)
+            deleted = []
+            # 删除原图
+            if os.path.isfile(filepath):
+                os.remove(filepath)
+                deleted.append(filename)
+            # 删除缩略图（同名 .jpg）
+            thumb_name = os.path.splitext(filename)[0] + '.jpg'
+            thumb_path = os.path.join(THUMB_DIR, thumb_name)
+            if os.path.isfile(thumb_path):
+                os.remove(thumb_path)
+                deleted.append('thumb/' + thumb_name)
+            self._json_ok({'ok': True, 'deleted': deleted})
+        except json.JSONDecodeError:
+            self._json_err(400, 'JSON 格式错误')
+        except Exception as e:
+            self._json_err(500, str(e))
+
+    # ---------- 生成缩略图（保存到 thumb/ 子目录，统一 .jpg 格式） ----------
+    @staticmethod
+    def _make_thumbnail(filepath):
+        if not HAS_PIL:
+            return None
+        try:
+            img = Image.open(filepath)
+            w, h = img.size
+            if w > THUMB_WIDTH:
+                new_h = int(h * THUMB_WIDTH / w)
+                thumb = img.resize((THUMB_WIDTH, new_h), Image.LANCZOS)
+            else:
+                thumb = img.copy()
+            os.makedirs(THUMB_DIR, exist_ok=True)
+            name = os.path.splitext(os.path.basename(filepath))[0]
+            thumb_path = os.path.join(THUMB_DIR, name + '.jpg')
+            if thumb.mode != 'RGB':
+                thumb = thumb.convert('RGB')
+            thumb.save(thumb_path, 'JPEG', quality=80, optimize=True)
+            return thumb_path
+        except Exception:
+            return None
 
     # ---------- 工具方法 ----------
     def _json_ok(self, obj):

@@ -79,6 +79,14 @@
         "zh": "",
         "en": ""
       }
+    },
+    {
+      "zh": "东方project",
+      "en": "Touhou Project",
+      "desc": {
+        "zh": "",
+        "en": ""
+      }
     }
   ],
   "site": {
@@ -505,6 +513,38 @@
           "url": "https://magma.com/d/P3g6MDuhlz"
         }
       ]
+    },
+    {
+      "id": 15,
+      "title": {
+        "zh": "茶绘",
+        "en": "E-chat"
+      },
+      "desc": {
+        "zh": "画了魔理沙~",
+        "en": "Marisa~"
+      },
+      "tags": [
+        "绘画",
+        "茶绘",
+        "东方project"
+      ],
+      "datetime": "2026-07-03 07:08",
+      "year": "2026",
+      "image": "assets/images/20260703071003.png",
+      "images": [
+        {
+          "url": "assets/images/20260703071003.png",
+          "caption": null,
+          "isCover": true
+        }
+      ],
+      "links": [
+        {
+          "name": "magma",
+          "url": "https://magma.com/d/5Zdqhz2lBk"
+        }
+      ]
     }
   ],
   "notes": [
@@ -520,7 +560,7 @@
         "编程"
       ],
       "excerpt": {
-        "zh": "部署在github上~",
+        "zh": "部署在**github**上！",
         "en": "At GitHub~"
       },
       "links": [

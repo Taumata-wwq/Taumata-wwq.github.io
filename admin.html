@@ -191,11 +191,9 @@
           </div>
         </div>
         <div class="field-hint" style="margin-bottom: var(--sp-3);">
-          点击右侧编辑按钮在下方展开编辑面板；编辑时该条目会变为「保存编辑 / 取消编辑」按钮。
+          点击「+ 新增」在上方展开编辑面板；点击列表中编辑按钮也可在上方展开。
         </div>
-        <div class="admin-list" id="projectsList"></div>
-
-        <!-- 编辑表单（默认隐藏，会被 JS 移到当前条目下方） -->
+        <!-- 编辑表单（默认隐藏，显示在列表上方） -->
         <div id="projectEditor" class="editor-panel" style="display:none;">
           <div class="admin-bar-title" style="margin-bottom: var(--sp-4);">编辑作品</div>
           <input type="hidden" id="pf_id">
@@ -265,6 +263,7 @@
             <button class="btn-ghost" type="button" id="btnAddLink" style="margin-top: var(--sp-2);">+ 添加链接</button>
           </div>
         </div>
+        <div class="admin-list" id="projectsList"></div>
       </section>
 
       <!-- 笔记列表 -->
@@ -275,9 +274,7 @@
             <button class="btn-ghost" id="btnAddNote">+ 新增</button>
           </div>
         </div>
-        <div class="admin-list" id="notesList"></div>
-
-        <!-- 笔记编辑表单 -->
+        <!-- 笔记编辑表单（默认隐藏，显示在列表上方） -->
         <div id="noteEditor" class="editor-panel" style="display:none;">
           <div class="admin-bar-title" style="margin-bottom: var(--sp-4);">编辑笔记</div>
           <input type="hidden" id="nf_id">
@@ -324,6 +321,7 @@
             <button class="btn-ghost" type="button" id="btnAddLinkNote" style="margin-top: var(--sp-2);">+ 添加链接</button>
           </div>
         </div>
+        <div class="admin-list" id="notesList"></div>
       </section>
 
       <!-- 标签管理 -->

@@ -63,12 +63,16 @@ function getCover(p) {
   return p.image || '';
 }
 
-/* 将图片 URL 转为缩略图 URL（assets/images/xxx.jpg → assets/images/xxx_thumb.jpg） */
+/* 将图片 URL 转为缩略图 URL（assets/images/xxx.jpg → assets/images/thumb/xxx.jpg） */
 function toThumbUrl(url) {
   if (!url) return url;
-  const dot = url.lastIndexOf('.');
-  if (dot < 0) return url;
-  return url.slice(0, dot) + '_thumb' + url.slice(dot);
+  /* 仅对 assets/images/ 下的图片生效，避免影响外部 URL */
+  const prefix = 'assets/images/';
+  if (url.indexOf(prefix) !== 0) return url;
+  const rest = url.slice(prefix.length);
+  /* 已经是 thumb/ 路径则不再转换 */
+  if (rest.indexOf('thumb/') === 0) return url;
+  return prefix + 'thumb/' + rest;
 }
 
 /* 取作品时间（兼容 year/datetime 字段） */
@@ -96,7 +100,7 @@ function sortByTimeDesc(items) {
 }
 
 /* 格式化笔记标签：数组用 · 连接（按首字母排序） */
-function formatNoteTags(tags) {
+function formatNoteTags(tags, lang) {
   if (!Array.isArray(tags) || !tags.length) return '';
   return tags.map((s) => String(s).trim()).filter(Boolean).sort((a, b) => {
     const la = a.toLowerCase();
@@ -104,7 +108,17 @@ function formatNoteTags(tags) {
     if (la < lb) return -1;
     if (la > lb) return 1;
     return 0;
-  }).join(' · ');
+  }).map((s) => translateTag(s, lang)).join(' · ');
+}
+
+/* 根据元数据翻译 tag 字符串到目标语言 */
+function translateTag(tagStr, lang) {
+  if (!tagStr) return '';
+  if (!siteData || !Array.isArray(siteData.tags)) return tagStr;
+  const meta = siteData.tags.find((t) => t && (t.zh === tagStr || t.en === tagStr));
+  if (!meta) return tagStr;
+  if (lang === 'en') return meta.en || meta.zh || tagStr;
+  return meta.zh || meta.en || tagStr;
 }
 
 /* 渲染链接引用列表 HTML（用于作品/笔记详情页末尾） */
@@ -469,7 +483,7 @@ async function homePage() {
                 <li class="note-item" data-href="#/notes/${n.id}" data-animate data-animate-delay="${i * 50}">
                   <span class="note-date">${n.date || ''}</span>
                   <span class="note-title">${loc(n.title, lang)}</span>
-                  <span class="note-tag">${formatNoteTags(n.tags)}</span>
+                  <span class="note-tag">${formatNoteTags(n.tags, lang)}</span>
                 </li>
               `).join('')}
             </ul>
@@ -515,7 +529,7 @@ function workCard(p, i, lang) {
         </a>
         ${desc ? `<p class="work-card-desc">${desc}</p>` : ''}
         <ul class="tag-list tag-list--inline">
-          ${tags.map((tg) => `<li class="tag">${escapeHtml(tg)}</li>`).join('')}
+          ${tags.map((tg) => `<li class="tag">${escapeHtml(translateTag(tg, lang))}</li>`).join('')}
         </ul>
       </div>
     </li>
@@ -661,7 +675,7 @@ async function workDetailPage(params) {
 
         ${tags.length ? `
           <ul class="tag-list tag-list--inline" style="margin-top: var(--sp-5); padding-top: var(--sp-4); border-top: 1px solid var(--border);">
-            ${tags.map((tg) => `<li class="tag">${escapeHtml(tg)}</li>`).join('')}
+            ${tags.map((tg) => `<li class="tag">${escapeHtml(translateTag(tg, lang))}</li>`).join('')}
           </ul>
         ` : ''}
 
@@ -946,7 +960,7 @@ async function notesPage(params) {
               <li class="note-item" data-href="#/notes/${n.id}" data-animate data-animate-delay="${i * 50}">
                 <span class="note-date">${n.date || ''}</span>
                 <span class="note-title">${loc(n.title, lang)}</span>
-                <span class="note-tag">${formatNoteTags(n.tags)}</span>
+                <span class="note-tag">${formatNoteTags(n.tags, lang)}</span>
               </li>
             `).join('')}
           </ul>
@@ -1002,7 +1016,7 @@ async function noteDetailPage(params) {
 
         ${tags.length ? `
           <ul class="tag-list tag-list--inline" style="margin-top: var(--sp-5); padding-top: var(--sp-4); border-top: 1px solid var(--border);">
-            ${tags.map((tg) => `<li class="tag">${escapeHtml(tg)}</li>`).join('')}
+            ${tags.map((tg) => `<li class="tag">${escapeHtml(translateTag(tg, lang))}</li>`).join('')}
           </ul>
         ` : ''}
 
@@ -1130,7 +1144,7 @@ async function searchPage(params) {
                   <li class="note-item" data-href="#/notes/${n.id}">
                     <span class="note-date">${n.date || ''}</span>
                     <span class="note-title">${loc(n.title, lang)}</span>
-                    <span class="note-tag">${escapeHtml(formatNoteTags(n.tags))}</span>
+                    <span class="note-tag">${escapeHtml(formatNoteTags(n.tags, lang))}</span>
                   </li>
                 `).join('')}
               </ul>

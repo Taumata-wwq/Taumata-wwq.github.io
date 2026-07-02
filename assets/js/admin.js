@@ -389,25 +389,24 @@ function renderTagEditPanel(item, idx) {
       <div class="field-grid">
         <div class="field">
           <label class="field-label">中文名称</label>
-          <input class="field-input" id="te_zh_${idx}" type="text" value="${escapeHtml(item.zh || '')}" placeholder="中文标签名">
+          <input class="field-input" id="te_zh_${idx}" type="text" value="${escapeHtml(item.zh || '')}" placeholder="中文标签名" data-tag-field>
         </div>
         <div class="field">
           <label class="field-label">英文名称</label>
-          <input class="field-input" id="te_en_${idx}" type="text" value="${escapeHtml(item.en || '')}" placeholder="英文标签名">
+          <input class="field-input" id="te_en_${idx}" type="text" value="${escapeHtml(item.en || '')}" placeholder="英文标签名" data-tag-field>
         </div>
       </div>
       <div class="field-grid">
         <div class="field">
           <label class="field-label">中文介绍</label>
-          <textarea class="field-input md-textarea" id="te_desc_zh_${idx}" rows="2" placeholder="标签的中文介绍（可选）">${escapeHtml(desc.zh || '')}</textarea>
+          <textarea class="field-input md-textarea" id="te_desc_zh_${idx}" rows="2" placeholder="标签的中文介绍（可选）" data-tag-field>${escapeHtml(desc.zh || '')}</textarea>
         </div>
         <div class="field">
           <label class="field-label">英文介绍</label>
-          <textarea class="field-input md-textarea" id="te_desc_en_${idx}" rows="2" placeholder="英文介绍（可选）">${escapeHtml(desc.en || '')}</textarea>
+          <textarea class="field-input md-textarea" id="te_desc_en_${idx}" rows="2" placeholder="英文介绍（可选）" data-tag-field>${escapeHtml(desc.en || '')}</textarea>
         </div>
       </div>
       <div class="tag-edit-actions">
-        <button class="btn-ghost" data-tag-save="${idx}">保存</button>
         <button class="btn-ghost" data-tag-close>收起</button>
       </div>
     </div>
@@ -424,14 +423,14 @@ function toggleTagEdit(idx) {
   renderTagsManager();
 }
 
-/* 保存内联编辑的 tag */
-function saveTagEdit(idx) {
+/* 同步保存内联编辑的 tag（不收起面板，不显示 toast，用于失焦自动保存） */
+function saveTagEdit(idx, opts) {
+  opts = opts || {};
   const items = buildTagItems();
   const item = items[idx];
   if (!item) return;
   const oldZh = item.zh || '';
   const oldEn = item.en || '';
-  const oldDesc = item.desc || { zh: '', en: '' };
 
   const newZh = ($(`te_zh_${idx}`) || {}).value || '';
   const newEn = ($(`te_en_${idx}`) || {}).value || '';
@@ -441,8 +440,22 @@ function saveTagEdit(idx) {
   const trimmedZh = newZh.trim();
   const trimmedEn = newEn.trim();
   if (!trimmedZh && !trimmedEn) {
+    if (opts.silent) return;
     toast('中英文不能同时为空');
     return;
+  }
+
+  /* 没有变化则不保存 */
+  if (trimmedZh === oldZh && trimmedEn === oldEn &&
+      trimmedZh && (trimmedEn || !oldEn)) {
+    const oldDesc = item.desc || { zh: '', en: '' };
+    if (newDescZh.trim() === oldDesc.zh && newDescEn.trim() === oldDesc.en) {
+      if (opts.close) {
+        editingTagIdx = -1;
+        renderTagsManager();
+      }
+      return;
+    }
   }
 
   /* 同步替换所有作品和笔记中的 tag 字符串 */
@@ -472,13 +485,15 @@ function saveTagEdit(idx) {
     data.tags.push(newMeta);
   }
 
-  editingTagIdx = -1;
+  if (opts.close) {
+    editingTagIdx = -1;
+  }
   renderTagsManager();
   safeRenderProjectsList();
   safeRenderNotesList();
   renderJsonPreview();
   debouncedSave();
-  toast('标签已更新');
+  if (!opts.silent) toast('标签已更新');
 }
 
 /* 新增标签：直接创建并展开编辑面板 */
@@ -1494,9 +1509,10 @@ function setImageAsCover(idx) {
   debouncedSave();
 }
 
-/* 删除编辑中的图片 */
-function removeEditingImage(idx) {
+/* 删除编辑中的图片（仅当主站用不到原图时才真正删除文件） */
+async function removeEditingImage(idx) {
   const wasCover = editingImages[idx] && editingImages[idx].isCover;
+  const removedUrl = editingImages[idx] && editingImages[idx].url;
   editingImages.splice(idx, 1);
   if (wasCover && editingImages.length) {
     editingImages[0].isCover = true;
@@ -1504,6 +1520,24 @@ function removeEditingImage(idx) {
   renderImageList();
   syncProjectEdit();
   debouncedSave();
+
+  /* 调用后端删除原图 + 缩略图（仅在 HTTP 模式下） */
+  if (isHttpServer && removedUrl && removedUrl.indexOf('assets/images/') === 0) {
+    const filename = removedUrl.split('/').pop();
+    try {
+      const res = await fetch('/api/delete-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filename })
+      });
+      const json = await res.json();
+      if (json.ok) {
+        toast('已删除图片文件');
+      }
+    } catch (e) {
+      /* 静默失败：文件可能不存在或已被删 */
+    }
+  }
 }
 
 /* ---------- 链接引用编辑 ---------- */
@@ -1593,11 +1627,15 @@ function fixImagePath(path) {
 async function showImagePickerModal() {
   const overlay = $('modalOverlay');
   if (!overlay) return;
+  const PAGE_SIZE = 10;
+  let allImages = [];
+  let currentPage = 1;
+
   /* 渲染模态框骨架 */
   overlay.innerHTML = `
     <div class="modal-dialog modal-dialog--wide" role="dialog" aria-modal="true">
       <div class="modal-title">选择图片</div>
-      <div class="modal-message">从 assets/images/ 选择已有图片，或上传新图片。</div>
+      <div class="modal-message">从 assets/images/ 选择已有图片，或上传新图片（自动生成缩略图）。</div>
       <div class="image-picker-toolbar">
         <button class="btn-ghost" type="button" id="pickerUploadBtn">↑ 上传新图片</button>
         <button class="btn-ghost" type="button" id="pickerRefreshBtn">↻ 刷新</button>
@@ -1606,6 +1644,7 @@ async function showImagePickerModal() {
       <div class="image-picker-grid" id="pickerGrid">
         <div class="image-picker-loading">加载中...</div>
       </div>
+      <div class="image-picker-pager" id="pickerPager"></div>
       <div class="modal-actions">
         <button class="btn-ghost" id="modalCancelBtn" type="button">取消</button>
       </div>
@@ -1614,6 +1653,7 @@ async function showImagePickerModal() {
   overlay.style.display = 'flex';
 
   const grid = document.getElementById('pickerGrid');
+  const pager = document.getElementById('pickerPager');
   const uploadBtn = document.getElementById('pickerUploadBtn');
   const refreshBtn = document.getElementById('pickerRefreshBtn');
   const fileInput = document.getElementById('pickerFileInput');
@@ -1624,35 +1664,67 @@ async function showImagePickerModal() {
     overlay.innerHTML = '';
   }
 
-  /* 加载图片列表 */
+  /* 渲染当前页 */
+  function renderPage() {
+    if (!allImages.length) {
+      grid.innerHTML = '<div class="image-picker-empty">assets/images/ 目录为空，请上传新图片</div>';
+      pager.innerHTML = '';
+      return;
+    }
+    const totalPages = Math.ceil(allImages.length / PAGE_SIZE);
+    if (currentPage > totalPages) currentPage = totalPages;
+    if (currentPage < 1) currentPage = 1;
+    const start = (currentPage - 1) * PAGE_SIZE;
+    const pageItems = allImages.slice(start, start + PAGE_SIZE);
+
+    grid.innerHTML = pageItems.map((name) => `
+      <button class="image-picker-item" data-picker-name="${escapeHtml(name)}" title="${escapeHtml(name)}">
+        <div class="image-picker-thumb" style="background-image:url('assets/images/${encodeURIComponent(name)}')"></div>
+        <div class="image-picker-name">${escapeHtml(name.length > 18 ? name.slice(0, 15) + '...' : name)}</div>
+      </button>
+    `).join('');
+
+    /* 绑定点击 */
+    grid.querySelectorAll('[data-picker-name]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const name = btn.dataset.pickerName;
+        const url = 'assets/images/' + name;
+        addEditingImage(url);
+        closePicker();
+        toast('已添加图片: ' + name);
+      });
+    });
+
+    /* 渲染分页器 */
+    if (totalPages <= 1) {
+      pager.innerHTML = `<span class="picker-page-info">共 ${allImages.length} 张</span>`;
+    } else {
+      pager.innerHTML = `
+        <button class="btn-ghost" type="button" data-page="prev" ${currentPage === 1 ? 'disabled' : ''}>‹ 上一页</button>
+        <span class="picker-page-info">${currentPage} / ${totalPages} （共 ${allImages.length} 张）</span>
+        <button class="btn-ghost" type="button" data-page="next" ${currentPage === totalPages ? 'disabled' : ''}>下一页 ›</button>
+      `;
+      pager.querySelector('[data-page="prev"]').addEventListener('click', () => {
+        if (currentPage > 1) { currentPage--; renderPage(); }
+      });
+      pager.querySelector('[data-page="next"]').addEventListener('click', () => {
+        if (currentPage < totalPages) { currentPage++; renderPage(); }
+      });
+    }
+  }
+
+  /* 加载图片列表（后端已按名称倒序返回） */
   async function loadGrid() {
     if (grid) grid.innerHTML = '<div class="image-picker-loading">加载中...</div>';
     try {
       const res = await fetch('/api/list-images', { cache: 'no-store' });
       const json = await res.json();
-      const images = json.images || [];
-      if (!images.length) {
-        grid.innerHTML = '<div class="image-picker-empty">assets/images/ 目录为空，请上传新图片</div>';
-        return;
-      }
-      grid.innerHTML = images.map((name) => `
-        <button class="image-picker-item" data-picker-name="${escapeHtml(name)}" title="${escapeHtml(name)}">
-          <div class="image-picker-thumb" style="background-image:url('assets/images/${encodeURIComponent(name)}')"></div>
-          <div class="image-picker-name">${escapeHtml(name.length > 18 ? name.slice(0, 15) + '...' : name)}</div>
-        </button>
-      `).join('');
-      /* 绑定点击 */
-      grid.querySelectorAll('[data-picker-name]').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          const name = btn.dataset.pickerName;
-          const url = 'assets/images/' + name;
-          addEditingImage(url);
-          closePicker();
-          toast('已添加图片: ' + name);
-        });
-      });
+      allImages = json.images || [];
+      currentPage = 1;
+      renderPage();
     } catch (e) {
       grid.innerHTML = '<div class="image-picker-empty">加载失败: ' + escapeHtml(e.message) + '</div>';
+      pager.innerHTML = '';
     }
   }
 
@@ -2141,41 +2213,66 @@ function bindEvents() {
   /* 关于信息字段失焦同步 */
   bindAboutFields();
 
-  /* 标签管理：新增 / 同步 / 编辑 / 删除 / 保存 / 收起（事件委托） */
+  /* 标签管理：新增 / 同步 / 编辑 / 删除 / 收起（事件委托） */
   const addTagBtn = $('btnAddTag');
   if (addTagBtn) addTagBtn.addEventListener('click', addTagItem);
   const syncTagsBtn = $('btnSyncTags');
   if (syncTagsBtn) syncTagsBtn.addEventListener('click', syncTagsFromContent);
   const tagsMgr = $('tagsManager');
-  if (tagsMgr) tagsMgr.addEventListener('click', async (e) => {
-    /* 保存按钮 */
-    const saveBtn = e.target.closest('[data-tag-save]');
-    if (saveBtn) {
-      e.stopPropagation();
-      saveTagEdit(parseInt(saveBtn.dataset.tagSave, 10));
-      return;
-    }
-    /* 收起按钮 */
-    const closeBtn = e.target.closest('[data-tag-close]');
-    if (closeBtn) {
-      e.stopPropagation();
-      editingTagIdx = -1;
-      renderTagsManager();
-      return;
-    }
-    /* 删除按钮 */
-    const delBtn = e.target.closest('[data-tag-del]');
-    if (delBtn) {
-      e.stopPropagation();
-      deleteTagItem(parseInt(delBtn.dataset.tagDel, 10));
-      return;
-    }
-    /* 点击 tag 行切换展开/收起 */
-    const toggleBtn = e.target.closest('[data-tag-toggle]');
-    if (toggleBtn) {
-      toggleTagEdit(parseInt(toggleBtn.dataset.tagToggle, 10));
-    }
-  });
+  if (tagsMgr) {
+    tagsMgr.addEventListener('click', async (e) => {
+      /* 收起按钮：先保存再收起 */
+      const closeBtn = e.target.closest('[data-tag-close]');
+      if (closeBtn) {
+        e.stopPropagation();
+        const panel = closeBtn.closest('[data-tag-panel]');
+        if (panel) {
+          const idx = parseInt(panel.dataset.tagPanel, 10);
+          if (!isNaN(idx)) saveTagEdit(idx, { close: true });
+          else { editingTagIdx = -1; renderTagsManager(); }
+        }
+        return;
+      }
+      /* 删除按钮 */
+      const delBtn = e.target.closest('[data-tag-del]');
+      if (delBtn) {
+        e.stopPropagation();
+        deleteTagItem(parseInt(delBtn.dataset.tagDel, 10));
+        return;
+      }
+      /* 点击 tag 行切换展开/收起（点击编辑中的 tag 行也收起并保存） */
+      const toggleBtn = e.target.closest('[data-tag-toggle]');
+      if (toggleBtn) {
+        const idx = parseInt(toggleBtn.dataset.tagToggle, 10);
+        if (editingTagIdx === idx) {
+          /* 当前正展开，点击则保存并收起 */
+          saveTagEdit(idx, { close: true });
+        } else {
+          /* 切换到其他 tag：先保存当前的 */
+          if (editingTagIdx !== -1) {
+            saveTagEdit(editingTagIdx, { silent: true });
+          }
+          toggleTagEdit(idx);
+        }
+      }
+    });
+    /* tag 编辑面板字段失焦自动保存（不收起） */
+    tagsMgr.addEventListener('focusout', (e) => {
+      const el = e.target;
+      if (!el || !el.dataset || el.dataset.tagField === undefined) return;
+      const panel = el.closest('[data-tag-panel]');
+      if (!panel) return;
+      const idx = parseInt(panel.dataset.tagPanel, 10);
+      if (isNaN(idx)) return;
+      /* 用 setTimeout 让焦点能切换到同面板的其他字段，避免过早保存导致输入框重渲染 */
+      setTimeout(() => {
+        /* 如果焦点已经离开整个面板，才保存 */
+        const active = document.activeElement;
+        if (active && panel.contains(active)) return;
+        saveTagEdit(idx, { silent: true });
+      }, 0);
+    });
+  }
 
   /* 标签输入 autocomplete */
   bindTagsAutocomplete('pf_tags', 'pf_tags_ac');
@@ -2216,6 +2313,10 @@ function bindEvents() {
       debouncedSave();
       closeNoteEditor();
       if (editId != null) scrollToListItem(editId, 'note');
+    }
+    /* 若当前有 tag 编辑面板展开，保存并收起 */
+    if (editingTagIdx !== -1) {
+      saveTagEdit(editingTagIdx, { close: true, silent: true });
     }
   });
 
