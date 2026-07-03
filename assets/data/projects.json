@@ -529,7 +529,7 @@
         "茶绘",
         "东方project"
       ],
-      "datetime": "2026-07-03 07:08",
+      "datetime": "2026-07-03 03:00",
       "year": "2026",
       "image": "assets/images/20260703071003.png",
       "images": [
@@ -597,8 +597,8 @@
       "zh": "摸鱼树上摸鱼果，摸鱼树下你和我"
     },
     "schedule": {
-      "status": "closed",
-      "slots": 0,
+      "status": "open",
+      "slots": 1,
       "turnaround": "5-7 天",
       "note": {
         "zh": "详情请私信沟通",

@@ -129,5 +129,16 @@
 
   <!-- ES module 入口 -->
   <script type="module" src="assets/js/main.js"></script>
+
+  <!-- Service Worker 注册（缓存图片，加速页面切换） -->
+  <script>
+    if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('/sw.js').catch(function (e) {
+          console.warn('[SW] 注册失败:', e);
+        });
+      });
+    }
+  </script>
 </body>
 </html>

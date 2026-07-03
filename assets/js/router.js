@@ -180,9 +180,11 @@ function renderMarkdown(text) {
       .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
       .replace(/\*([^*]+)\*/g, '<em>$1</em>')
       .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, label, url) => {
+        /* 仅允许 http/https/mailto 协议，阻止 javascript: 等危险协议 */
+        if (!/^(https?:|mailto:)/i.test(url)) return label;
         const isExt = /^https?:\/\//i.test(url);
         const target = isExt ? ' target="_blank" rel="noopener noreferrer"' : '';
-        return `<a href="${url}"${target}>${label}</a>`;
+        return `<a href="${escapeAttr(url)}"${target}>${label}</a>`;
       });
   }
 
@@ -310,6 +312,13 @@ function clamp01(v) { return v < 0 ? 0 : (v > 1 ? 1 : v); }
 function escapeHtml(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+
+/* 转义用于 HTML 属性值和 JS 字符串字面量的字符（防止 XSS 和属性注入） */
+function escapeAttr(s) {
+  return String(s == null ? '' : s).replace(/['"\\<>]/g, (c) => ({
+    "'": '&#39;', '"': '&quot;', '\\': '\\\\', '<': '&lt;', '>': '&gt;'
   }[c]));
 }
 
@@ -442,8 +451,8 @@ async function homePage() {
       <section class="hero" aria-labelledby="hero-name">
         <div class="hero-grid">
           <div class="hero-left">
-            <h1 class="hero-name" id="hero-name" data-animate>${loc(site.name, lang) || 'Taumata'}</h1>
-            <p class="hero-tagline" data-animate data-animate-delay="60">${tagline}</p>
+            <h1 class="hero-name" id="hero-name" data-animate>${escapeHtml(loc(site.name, lang) || 'Taumata')}</h1>
+            <p class="hero-tagline" data-animate data-animate-delay="60">${escapeHtml(tagline)}</p>
           </div>
           <div class="hero-right">
             <div class="hero-meta" data-animate data-animate-delay="180">
@@ -458,7 +467,7 @@ async function homePage() {
 
       <section class="block block--split" aria-labelledby="block-projects">
         <div class="block-head">
-          <a href="#/work" class="block-title block-title--link" id="block-projects" aria-label="${t('block.projects', lang)}">
+          <a href="#/work" class="block-title block-title--link" id="block-projects" aria-label="${escapeAttr(t('block.projects', lang))}">
             <span class="block-num">01</span>
             <span class="block-label" data-i18n="block.projects">${t('block.projects', lang)}</span>
             <span class="block-arrow" aria-hidden="true">→</span>
@@ -475,7 +484,7 @@ async function homePage() {
 
       <section class="block block--split" aria-labelledby="block-notes">
         <div class="block-head">
-          <a href="#/notes" class="block-title block-title--link" id="block-notes" aria-label="${t('block.notes', lang)}">
+          <a href="#/notes" class="block-title block-title--link" id="block-notes" aria-label="${escapeAttr(t('block.notes', lang))}">
             <span class="block-num">02</span>
             <span class="block-label" data-i18n="block.notes">${t('block.notes', lang)}</span>
             <span class="block-arrow" aria-hidden="true">→</span>
@@ -485,10 +494,10 @@ async function homePage() {
           ${notes.length ? `
             <ul class="notes-preview">
               ${notes.map((n, i) => `
-                <li class="note-item" data-href="#/notes/${n.id}" data-animate data-animate-delay="${i * 50}">
-                  <span class="note-date">${n.date || ''}</span>
-                  <span class="note-title">${loc(n.title, lang)}</span>
-                  <span class="note-tag">${formatNoteTags(n.tags, lang)}</span>
+                <li class="note-item" data-href="#/notes/${escapeAttr(n.id)}" data-animate data-animate-delay="${i * 50}">
+                  <span class="note-date">${escapeHtml(n.date || '')}</span>
+                  <span class="note-title">${escapeHtml(loc(n.title, lang))}</span>
+                  <span class="note-tag">${escapeHtml(formatNoteTags(n.tags, lang))}</span>
                 </li>
               `).join('')}
             </ul>
@@ -516,23 +525,26 @@ function workCard(p, i, lang) {
   const img = getCover(p);
   /* 卡片展示用缩略图，加载失败时回退到原图 */
   const thumbSrc = toThumbUrl(img);
+  /* 转义 URL 中可能破坏属性/JS 的字符 */
+  const imgEscaped = escapeAttr(img);
+  const thumbEscaped = escapeAttr(thumbSrc);
 
   return `
-    <li class="work-card" data-href="#/work/${id}">
+    <li class="work-card" data-href="#/work/${escapeAttr(id)}">
       <div class="work-card-img" ${img ? '' : 'data-empty'}>
         ${img
-          ? `<img src="${thumbSrc}" alt="${escapeHtml(title)}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${img}'" />`
+          ? `<img src="${thumbEscaped}" alt="${escapeHtml(title)}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${imgEscaped}'" />`
           : `<span class="work-card-empty">${t('workdetail.placeholder', lang)}</span>`}
       </div>
       <div class="work-card-body">
-        <a class="work-card-name" href="#/work/${id}">
+        <a class="work-card-name" href="#/work/${escapeAttr(id)}">
           <span class="work-card-num">${dateStr}</span>
-          <span class="work-card-title">${title}</span>
+          <span class="work-card-title">${escapeHtml(title)}</span>
           <svg class="icon-external" width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
             <path d="M6 3h7v7M13 3L6 10M11 13H4V6"/>
           </svg>
         </a>
-        ${desc ? `<p class="work-card-desc">${desc}</p>` : ''}
+        ${desc ? `<p class="work-card-desc">${escapeHtml(desc)}</p>` : ''}
         <ul class="tag-list tag-list--inline">
           ${tags.map((tg) => `<li class="tag">${escapeHtml(translateTag(tg, lang))}</li>`).join('')}
         </ul>
@@ -574,10 +586,17 @@ async function workListPage() {
         if (sentinel) {
           const io = new IntersectionObserver((entries) => {
             if (entries[0].isIntersecting) {
+              const prevDisplayed = displayed;
               displayed = Math.min(displayed + PAGE_SIZE, allProjects.length);
               const grid = document.getElementById('workGrid');
               if (grid) {
-                grid.innerHTML = allProjects.slice(0, displayed).map((p, i) => workCard(p, i, lang)).join('');
+                /* 仅追加新增的卡片，避免重建已加载的图片 */
+                const fragment = document.createElement('div');
+                fragment.innerHTML = allProjects.slice(prevDisplayed, displayed)
+                  .map((p, i) => workCard(p, prevDisplayed + i, lang)).join('');
+                while (fragment.firstChild) {
+                  grid.appendChild(fragment.firstChild);
+                }
                 bindImageParallax(scope);
               }
               if (displayed >= allProjects.length) {
@@ -641,7 +660,7 @@ async function workDetailPage(params) {
       </p>
       <article class="work-detail" data-animate>
         <header class="work-detail-header">
-          <h1 class="work-detail-title">${title}</h1>
+          <h1 class="work-detail-title">${escapeHtml(title)}</h1>
           <div class="work-detail-meta">
             ${time ? `<span>${escapeHtml(time)}</span>` : ''}
           </div>
@@ -661,7 +680,7 @@ async function workDetailPage(params) {
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 3L4 8l6 5"/></svg>
               </button>
               <div class="viewer-frame" data-viewer-frame>
-                <img class="viewer-img" data-viewer-img src="${images[0].url}" alt="${title}" />
+                <img class="viewer-img" data-viewer-img src="${escapeAttr(images[0].url)}" alt="${escapeAttr(title)}" decoding="async" />
               </div>
               <button class="viewer-nav viewer-nav--next" data-viewer-next aria-label="下一张">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 3l6 5-6 5"/></svg>
@@ -672,7 +691,7 @@ async function workDetailPage(params) {
             </div>
             <div class="viewer-thumbs" data-viewer-thumbs>
               ${images.map((im, i) => `
-                <button class="viewer-thumb ${i === 0 ? 'is-active' : ''}" data-viewer-thumb="${i}" style="background-image:url('${escapeHtml(im.url)}')" aria-label="第 ${i + 1} 张"></button>
+                <button class="viewer-thumb ${i === 0 ? 'is-active' : ''}" data-viewer-thumb="${i}" style="background-image:url('${escapeAttr(im.url)}')" aria-label="第 ${i + 1} 张"></button>
               `).join('')}
             </div>
           </div>
@@ -812,13 +831,15 @@ function openLightbox(images, startIdx) {
     startDx = dx; startDy = dy;
     e.preventDefault();
   });
-  window.addEventListener('mousemove', (e) => {
+  function onMouseMove(e) {
     if (!dragging) return;
     dx = startDx + (e.clientX - startX);
     dy = startDy + (e.clientY - startY);
     applyTransform();
-  });
-  window.addEventListener('mouseup', () => { dragging = false; });
+  }
+  function onMouseUp() { dragging = false; }
+  window.addEventListener('mousemove', onMouseMove);
+  window.addEventListener('mouseup', onMouseUp);
 
   /* 触屏拖拽 */
   img.addEventListener('touchstart', (e) => {
@@ -850,6 +871,8 @@ function openLightbox(images, startIdx) {
 
   function close() {
     document.removeEventListener('keydown', onKey);
+    window.removeEventListener('mousemove', onMouseMove);
+    window.removeEventListener('mouseup', onMouseUp);
     document.body.removeChild(overlay);
     document.body.style.overflow = '';
   }
@@ -962,10 +985,10 @@ async function notesPage(params) {
         ${notes.length ? `
           <ul class="notes-list">
             ${notes.map((n, i) => `
-              <li class="note-item" data-href="#/notes/${n.id}" data-animate data-animate-delay="${i * 50}">
-                <span class="note-date">${n.date || ''}</span>
-                <span class="note-title">${loc(n.title, lang)}</span>
-                <span class="note-tag">${formatNoteTags(n.tags, lang)}</span>
+              <li class="note-item" data-href="#/notes/${escapeAttr(n.id)}" data-animate data-animate-delay="${i * 50}">
+                <span class="note-date">${escapeHtml(n.date || '')}</span>
+                <span class="note-title">${escapeHtml(loc(n.title, lang))}</span>
+                <span class="note-tag">${escapeHtml(formatNoteTags(n.tags, lang))}</span>
               </li>
             `).join('')}
           </ul>
@@ -1010,9 +1033,9 @@ async function noteDetailPage(params) {
       </p>
       <article class="note-detail" data-animate>
         <header class="note-detail-header">
-          <h1 class="note-detail-title">${title}</h1>
+          <h1 class="note-detail-title">${escapeHtml(title)}</h1>
           <div class="note-detail-meta">
-            ${n.date ? `<span>${n.date}</span>` : ''}
+            ${n.date ? `<span>${escapeHtml(n.date)}</span>` : ''}
           </div>
         </header>
         <div class="note-detail-body md-content">
@@ -1061,10 +1084,10 @@ async function notFoundPage() {
     const pixivUrl = 'https://www.pixiv.net/artworks/' + item.id;
     box.innerHTML = `
       <p class="pixiv-random-label" style="font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; color: var(--fg-dim); text-transform: uppercase; margin-bottom: var(--sp-3);">
-        Pixiv Daily Top 50 · #${item.rank || '?'}
+        Pixiv Daily Top 50 · #${escapeHtml(String(item.rank || '?'))}
       </p>
-      <a href="${pixivUrl}" target="_blank" rel="noopener noreferrer" class="pixiv-random-link">
-        <img src="${escapeHtml(item.url)}" alt="${escapeHtml(item.title || '')}" loading="lazy" class="pixiv-random-img" />
+      <a href="${escapeAttr(pixivUrl)}" target="_blank" rel="noopener noreferrer" class="pixiv-random-link">
+        <img src="${escapeAttr(item.url)}" alt="${escapeAttr(item.title || '')}" loading="lazy" class="pixiv-random-img" />
       </a>
       <p class="pixiv-random-caption" style="margin-top: var(--sp-2); font-size: 12px; color: var(--fg-muted);">
         ${escapeHtml(item.title || '')} · ${escapeHtml(item.user_name || '')}
@@ -1086,23 +1109,37 @@ async function searchPage(params) {
     ? q.split(/[,，]/).map((s) => s.trim().toLowerCase()).filter(Boolean)
     : [];
 
+  /* 构建 tag 翻译映射（zh↔en），用于搜索时匹配翻译后的标签名 */
+  const tagMap = {};
+  (Array.isArray(data.tags) ? data.tags : []).forEach((t) => {
+    if (!t) return;
+    if (t.zh) tagMap[t.zh.toLowerCase()] = (t.en || t.zh).toLowerCase();
+    if (t.en) tagMap[t.en.toLowerCase()] = (t.zh || t.en).toLowerCase();
+  });
+  const expandTag = (tg) => {
+    const lower = String(tg).toLowerCase();
+    const result = [lower];
+    if (tagMap[lower]) result.push(tagMap[lower]);
+    return result;
+  };
+
   let matchedProjects = [];
   let matchedNotes = [];
   if (conditions.length) {
     matchedProjects = sortByTimeDesc(data.projects || []).filter((p) => {
       const titleZh = loc(p.title, 'zh').toLowerCase();
       const titleEn = loc(p.title, 'en').toLowerCase();
-      const tags = (p.tags || []).map((tg) => String(tg).toLowerCase());
+      const tagVariants = (p.tags || []).flatMap(expandTag);
       return conditions.every((cond) =>
-        titleZh.includes(cond) || titleEn.includes(cond) || tags.some((tg) => tg.includes(cond))
+        titleZh.includes(cond) || titleEn.includes(cond) || tagVariants.some((tv) => tv.includes(cond))
       );
     });
     matchedNotes = (data.notes || []).filter((n) => {
       const titleZh = loc(n.title, 'zh').toLowerCase();
       const titleEn = loc(n.title, 'en').toLowerCase();
-      const tags = Array.isArray(n.tags) ? n.tags.map((s) => String(s).trim().toLowerCase()).filter(Boolean) : [];
+      const tagVariants = Array.isArray(n.tags) ? n.tags.flatMap(expandTag) : [];
       return conditions.every((cond) =>
-        titleZh.includes(cond) || titleEn.includes(cond) || tags.some((tg) => tg.includes(cond))
+        titleZh.includes(cond) || titleEn.includes(cond) || tagVariants.some((tv) => tv.includes(cond))
       );
     });
   }
@@ -1146,9 +1183,9 @@ async function searchPage(params) {
             <div class="block-body" data-animate>
               <ul class="notes-list">
                 ${matchedNotes.map((n) => `
-                  <li class="note-item" data-href="#/notes/${n.id}">
-                    <span class="note-date">${n.date || ''}</span>
-                    <span class="note-title">${loc(n.title, lang)}</span>
+                  <li class="note-item" data-href="#/notes/${escapeAttr(n.id)}">
+                    <span class="note-date">${escapeHtml(n.date || '')}</span>
+                    <span class="note-title">${escapeHtml(loc(n.title, lang))}</span>
                     <span class="note-tag">${escapeHtml(formatNoteTags(n.tags, lang))}</span>
                   </li>
                 `).join('')}
@@ -1215,6 +1252,7 @@ function afterMountCommon(scope) {
 
 /* ---------- Tag Popover：点击 tag 弹出介绍和相关内容 ---------- */
 let tagPopoverEl = null;
+let tagPopoverToken = 0; /* 取消令牌：每次显示递增，过期的渲染将被丢弃 */
 
 function ensureTagPopover() {
   if (tagPopoverEl && document.body.contains(tagPopoverEl)) return tagPopoverEl;
@@ -1236,34 +1274,47 @@ function ensureTagPopover() {
 }
 
 function hideTagPopover() {
+  tagPopoverToken++; /* 使任何进行中的异步渲染失效 */
   if (tagPopoverEl) tagPopoverEl.style.display = 'none';
 }
 
 async function showTagPopover(anchorEl, tagText, lang) {
   const popover = ensureTagPopover();
+  const myToken = ++tagPopoverToken; /* 本次显示的令牌 */
   const data = await loadSiteData();
+  /* 异步等待期间若已被后续点击取代，则放弃渲染 */
+  if (myToken !== tagPopoverToken) return;
   /* 查找 tag 元数据 */
   const tags = Array.isArray(data.tags) ? data.tags : [];
-  const meta = tags.find((t) => t && (t.zh === tagText || t.en === tagText));
+  const meta = tags.find((tt) => tt && (tt.zh === tagText || tt.en === tagText));
   const desc = meta && meta.desc ? loc(meta.desc, lang) : '';
   const displayName = meta ? (lang === 'zh' ? (meta.zh || meta.en) : (meta.en || meta.zh)) : tagText;
 
-  /* 查找相关作品（最多 5 个） */
-  const relatedProjects = sortByTimeDesc(data.projects || []).filter((p) =>
-    Array.isArray(p.tags) && p.tags.some((t) => t === tagText)
-  ).slice(0, 5);
+  /* 构建匹配集合：tagText 可能是中文名或英文名，需同时匹配 zh 和 en */
+  const matchSet = new Set();
+  matchSet.add(tagText);
+  if (meta) {
+    if (meta.zh) matchSet.add(meta.zh);
+    if (meta.en) matchSet.add(meta.en);
+  }
+  const matchTag = (t) => matchSet.has(t);
 
-  /* 查找相关笔记（最多 3 条） */
+  /* 查找相关作品（最多 8 个，覆盖更全面） */
+  const relatedProjects = sortByTimeDesc(data.projects || []).filter((p) =>
+    Array.isArray(p.tags) && p.tags.some(matchTag)
+  ).slice(0, 8);
+
+  /* 查找相关笔记（最多 5 条） */
   const relatedNotes = (data.notes || []).filter((n) =>
-    Array.isArray(n.tags) && n.tags.some((t) => t === tagText)
-  ).slice(0, 3);
+    Array.isArray(n.tags) && n.tags.some(matchTag)
+  ).slice(0, 5);
 
   /* 统计总数 */
   const totalProjects = (data.projects || []).filter((p) =>
-    Array.isArray(p.tags) && p.tags.some((t) => t === tagText)
+    Array.isArray(p.tags) && p.tags.some(matchTag)
   ).length;
   const totalNotes = (data.notes || []).filter((n) =>
-    Array.isArray(n.tags) && n.tags.some((t) => t === tagText)
+    Array.isArray(n.tags) && n.tags.some(matchTag)
   ).length;
 
   popover.innerHTML = `
@@ -1279,9 +1330,10 @@ async function showTagPopover(anchorEl, tagText, lang) {
           ${relatedProjects.map((p) => {
             const cover = getCover(p);
             const title = loc(p.title, lang);
+            const thumbUrl = toThumbUrl(cover);
             return `
-              <a href="#/work/${p.id}" class="tag-popover-work">
-                ${cover ? `<span class="tag-popover-work-img" style="background-image:url('${escapeHtml(toThumbUrl(cover))}')"></span>` : '<span class="tag-popover-work-img tag-popover-work-img--empty"></span>'}
+              <a href="#/work/${escapeAttr(p.id)}" class="tag-popover-work">
+                ${cover ? `<span class="tag-popover-work-img" style="background-image:url('${escapeAttr(thumbUrl)}')"></span>` : '<span class="tag-popover-work-img tag-popover-work-img--empty"></span>'}
                 <span class="tag-popover-work-title">${escapeHtml(title)}</span>
               </a>
             `;
@@ -1294,7 +1346,7 @@ async function showTagPopover(anchorEl, tagText, lang) {
         <div class="tag-popover-label">${lang === 'zh' ? '相关笔记' : 'Related Notes'} · ${totalNotes}</div>
         <div class="tag-popover-notes">
           ${relatedNotes.map((n) => `
-            <a href="#/notes/${n.id}" class="tag-popover-note">
+            <a href="#/notes/${escapeAttr(n.id)}" class="tag-popover-note">
               <span class="tag-popover-note-date">${escapeHtml(n.date || '')}</span>
               <span class="tag-popover-note-title">${escapeHtml(loc(n.title, lang))}</span>
             </a>
@@ -1308,6 +1360,9 @@ async function showTagPopover(anchorEl, tagText, lang) {
       </a>
     ` : `<p class="tag-popover-empty">${lang === 'zh' ? '暂无相关内容' : 'No related content'}</p>`}
   `;
+
+  /* 再次确认令牌，避免在 innerHTML 之前被取代 */
+  if (myToken !== tagPopoverToken) return;
 
   /* 定位到 tag 下方 */
   const rect = anchorEl.getBoundingClientRect();

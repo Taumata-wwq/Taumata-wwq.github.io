@@ -40,6 +40,8 @@ let noteEditBackup = null;
 let projectEditWasNew = false;   /* 标记当前编辑的是否是新建作品 */
 let noteEditWasNew = false;      /* 标记当前编辑的是否是新建笔记 */
 let saveTimer = null;            /* 防抖保存计时器 */
+let isSaving = false;            /* 是否正在保存中（防止并发保存） */
+let saveAgain = false;           /* 保存期间又有新改动，需再次保存 */
 let editingTagIdx = -1;          /* 标签管理页当前展开编辑的 tag 索引（-1 = 无） */
 
 /* ---------- 工具 ---------- */
@@ -60,6 +62,13 @@ function toast(msg) {
 function escapeHtml(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+
+/* 转义用于 HTML 属性值和 JS 字符串字面量的字符（防止 XSS 和属性注入） */
+function escapeAttr(s) {
+  return String(s == null ? '' : s).replace(/['"\\<>]/g, (c) => ({
+    "'": '&#39;', '"': '&quot;', '\\': '\\\\', '<': '&lt;', '>': '&gt;'
   }[c]));
 }
 
@@ -183,13 +192,27 @@ async function saveDraft() {
   setSaveStatus('已保存');
 }
 
-/* 防抖保存：800ms 内多次调用只触发一次保存（静默，不弹 toast） */
+/* 防抖保存：800ms 内多次调用只触发一次保存（静默，不弹 toast）
+   保存期间若有新改动，会在当前保存完成后再次保存一次 */
 function debouncedSave() {
   setSaveStatus('saving...');
+  /* 如果正在保存中，标记需要再次保存 */
+  if (isSaving) {
+    saveAgain = true;
+    return;
+  }
   clearTimeout(saveTimer);
   saveTimer = setTimeout(async () => {
+    isSaving = true;
     await _doSave(true);
-    setSaveStatus('已保存');
+    isSaving = false;
+    /* 保存期间又有新改动，再次保存 */
+    if (saveAgain) {
+      saveAgain = false;
+      debouncedSave();
+    } else {
+      setSaveStatus('已保存');
+    }
   }, 800);
 }
 
@@ -772,7 +795,7 @@ function renderProjectsList() {
   ul.innerHTML = sorted.map((p, i) => {
     const cover = getCover(p);
     const img = cover
-      ? `<span class="admin-thumb" style="background-image:url('${escapeHtml(cover)}')"></span>`
+      ? `<span class="admin-thumb" style="background-image:url('${escapeAttr(cover)}')"></span>`
       : `<span class="admin-thumb admin-thumb--empty"></span>`;
     const imgCount = Array.isArray(p.images) ? p.images.length : (cover ? 1 : 0);
     const isEditing = editingProjectId != null && String(editingProjectId) === String(p.id);
@@ -1434,7 +1457,7 @@ function renderImageList() {
       <div class="image-list-drag" title="拖拽排序" aria-hidden="true">
         <svg width="10" height="14" viewBox="0 0 10 14" fill="currentColor"><circle cx="2" cy="2" r="1"/><circle cx="2" cy="7" r="1"/><circle cx="2" cy="12" r="1"/><circle cx="8" cy="2" r="1"/><circle cx="8" cy="7" r="1"/><circle cx="8" cy="12" r="1"/></svg>
       </div>
-      <div class="image-list-thumb ${im.url ? '' : 'image-list-thumb--empty'}" style="${im.url ? `background-image:url('${escapeHtml(im.url)}')` : ''}"></div>
+      <div class="image-list-thumb ${im.url ? '' : 'image-list-thumb--empty'}" style="${im.url ? `background-image:url('${escapeAttr(im.url)}')` : ''}"></div>
       <div class="image-list-meta">
         <span>#${String(i + 1).padStart(2, '0')}</span>
         ${im.isCover ? '<span class="image-list-cover-badge">★ 封面</span>' : ''}
@@ -1674,12 +1697,31 @@ async function showImagePickerModal() {
     const start = (currentPage - 1) * PAGE_SIZE;
     const pageItems = allImages.slice(start, start + PAGE_SIZE);
 
-    grid.innerHTML = pageItems.map((name) => `
+    grid.innerHTML = pageItems.map((name) => {
+      /* 缩略图 URL：assets/images/xxx.png → assets/images/thumb/xxx.jpg */
+      const dotIdx = name.lastIndexOf('.');
+      const baseName = dotIdx > 0 ? name.slice(0, dotIdx) : name;
+      const thumbUrl = 'assets/images/thumb/' + encodeURIComponent(baseName) + '.jpg';
+      const fallbackUrl = 'assets/images/' + encodeURIComponent(name);
+      return `
       <button class="image-picker-item" data-picker-name="${escapeHtml(name)}" title="${escapeHtml(name)}">
-        <div class="image-picker-thumb" style="background-image:url('assets/images/${encodeURIComponent(name)}')"></div>
+        <div class="image-picker-thumb">
+          <img src="${escapeAttr(thumbUrl)}" data-fallback="${escapeAttr(fallbackUrl)}" alt="${escapeAttr(name)}" loading="lazy" decoding="async" />
+        </div>
         <div class="image-picker-name">${escapeHtml(name.length > 18 ? name.slice(0, 15) + '...' : name)}</div>
       </button>
-    `).join('');
+    `;
+    }).join('');
+
+    /* 缩略图加载失败时回退到原图 */
+    grid.querySelectorAll('.image-picker-thumb img[data-fallback]').forEach((img) => {
+      img.addEventListener('error', function handler() {
+        if (this.dataset.fallback) {
+          this.src = this.dataset.fallback;
+          this.removeAttribute('data-fallback');
+        }
+      });
+    });
 
     /* 绑定点击 */
     grid.querySelectorAll('[data-picker-name]').forEach((btn) => {

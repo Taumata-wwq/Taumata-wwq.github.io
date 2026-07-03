@@ -2,7 +2,7 @@
    theme.js — 主题状态 / 明暗 / 强调色 / 工具函数
    ============================================================ */
 
-import { DEFAULT_LANG, applyLang, DICT } from './i18n.js';
+import { DEFAULT_LANG, applyLang, DICT, t } from './i18n.js';
 
 export const KEY = 'taumata.theme.v1';
 export const LANG_KEY = 'taumata.lang.v1';
