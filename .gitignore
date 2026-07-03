@@ -26,3 +26,7 @@ desktop.ini
 .env
 .venv/
 venv/
+
+# IDE 工作区文件
+*.code-workspace
+

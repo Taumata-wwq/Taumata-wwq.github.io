@@ -8,7 +8,6 @@ import { t, DICT, DEFAULT_LANG } from './i18n.js';
 import { state, copyText, retriggerAnimations } from './theme.js';
 
 let routes = [];
-let activeRoute = null;
 
 /* 站点数据：每次路由切换都重新读取，保证后台编辑后能同步显示 */
 let siteData = null;
@@ -91,12 +90,6 @@ function getTimestamp(p) {
   const year = parseInt(dt, 10);
   if (!isNaN(year)) return Date.parse(year + '-01-01') || 0;
   return 0;
-}
-
-/* 格式化时间显示：YYYY-MM-DD HH:MM → 显示原值；纯年份 → 显示年份 */
-function formatTime(p, lang) {
-  const dt = p.datetime || p.year || '';
-  return dt;
 }
 
 /* 按时间倒序排序（最新在前） */
@@ -417,7 +410,6 @@ async function handleRoute() {
   }
   const matched = matchRoute(path);
   if (matched) {
-    activeRoute = matched.route.pattern;
     await matched.route.handler(Object.assign({}, matched.params, query));
   } else {
     await notFoundPage();
@@ -635,7 +627,7 @@ async function workDetailPage(params) {
     if (la > lb) return 1;
     return 0;
   });
-  const time = formatTime(p, lang);
+  const time = p.datetime || p.year || '';
 
   let images = Array.isArray(p.images) && p.images.length
     ? p.images.filter((it) => it && it.url)

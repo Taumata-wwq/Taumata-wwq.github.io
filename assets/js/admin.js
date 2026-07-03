@@ -1391,12 +1391,6 @@ function scrollToListItem(id, type) {
   }
 }
 
-/* 兼容旧调用：同步 + 保存 */
-function applyProjectEdit() {
-  syncProjectEdit();
-  saveDraft();
-}
-
 async function cancelProjectEdit(force) {
   if (!force && projectEditSnapshot && !shallowEqual(projectEditSnapshot, snapshotProjectForm())) {
     if (!await showConfirmModal('取消编辑', '当前作品有未保存的更改，确定要取消吗？')) return;
@@ -1605,8 +1599,7 @@ function removeEditingLink(idx) {
   debouncedSave();
 }
 
-/* ---------- 图片选择器（http:// 模式下使用 serve.py API） ---------- */
-let imagePickerState = { images: [], loading: false };
+/* ---------- 图片选择器 ---------- */
 
 async function openImagePicker() {
   if (!isHttpServer) {
@@ -1913,12 +1906,6 @@ function closeNoteEditor() {
   const editor = $('noteEditor');
   if (editor) editor.style.display = 'none';
   safeRenderNotesList();
-}
-
-/* 兼容旧调用：同步 + 保存 */
-function applyNoteEdit() {
-  syncNoteEdit();
-  saveDraft();
 }
 
 async function cancelNoteEdit(force) {
