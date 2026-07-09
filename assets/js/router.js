@@ -266,40 +266,6 @@ function renderMarkdown(text) {
   return html;
 }
 
-/* 渲染档期信息 HTML（关于页用） */
-function renderScheduleHtml(schedule, lang) {
-  if (!schedule) return '';
-  const statusMap = {
-    open: { zh: '接稿中', en: 'Open for commissions', cls: 'is-open' },
-    busy: { zh: '繁忙/预约中', en: 'Busy/Booking', cls: 'is-busy' },
-    closed: { zh: '休息中', en: 'Closed', cls: 'is-closed' }
-  };
-  const status = statusMap[schedule.status] || statusMap.open;
-  const statusText = lang === 'zh' ? status.zh : status.en;
-  const slots = schedule.slots != null ? schedule.slots : '';
-  const turnaround = schedule.turnaround || '';
-  const note = schedule.note ? loc(schedule.note, lang) : '';
-
-  const hasContent = status || slots !== '' || turnaround || note;
-  if (!hasContent) return '';
-
-  return `
-    <div class="schedule-box ${status.cls}">
-      <div class="schedule-status">
-        <span class="schedule-dot"></span>
-        <span class="schedule-status-text">${escapeHtml(statusText)}</span>
-      </div>
-      ${(slots !== '' || turnaround) ? `
-        <div class="schedule-info">
-          ${slots !== '' ? `<span class="schedule-item"><span class="schedule-label">${lang === 'zh' ? '可接' : 'Slots'}</span> <span class="schedule-value">${escapeHtml(String(slots))}</span></span>` : ''}
-          ${turnaround ? `<span class="schedule-item"><span class="schedule-label">${lang === 'zh' ? '周期' : 'Turnaround'}</span> <span class="schedule-value">${escapeHtml(turnaround)}</span></span>` : ''}
-        </div>
-      ` : ''}
-      ${note ? `<p class="schedule-note">${escapeHtml(note)}</p>` : ''}
-    </div>
-  `;
-}
-
 function clamp01(v) { return v < 0 ? 0 : (v > 1 ? 1 : v); }
 
 function escapeHtml(s) {
@@ -422,7 +388,7 @@ async function homePage() {
   const lang = state.lang;
   const data = await loadSiteData();
   const site = data.site || {};
-  const projects = sortByTimeDesc(data.projects || []).slice(0, 6);
+  const projects = sortByTimeDesc(data.projects || []).slice(0, 3);
   const notes = (data.notes || []).slice(0, 4);
 
   const tagline = loc(site.tagline, lang) || t('hero.tagline', lang);
@@ -795,7 +761,9 @@ function openLightbox(images, startIdx) {
   prevBtn.addEventListener('click', () => goto(idx - 1));
   nextBtn.addEventListener('click', () => goto(idx + 1));
   closeBtn.addEventListener('click', close);
-  overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay || e.target.classList.contains('lightbox-stage')) close();
+  });
 
   toolbar.addEventListener('click', (e) => {
     const action = e.target.dataset.lbAction;
@@ -884,7 +852,6 @@ async function aboutPage() {
     : [t('about.p1', lang), t('about.p2', lang)];
   const skills = Array.isArray(about.skills) ? about.skills : [];
   const contacts = Array.isArray(about.contacts) ? about.contacts : [];
-  const schedule = about.schedule;
 
   render(`
     <main class="container page-about" role="main">
@@ -896,7 +863,6 @@ async function aboutPage() {
       <section class="block">
         <div class="block-body about-body" data-animate>
           ${paras.map((p) => `<p>${escapeHtml(p)}</p>`).join('')}
-          ${renderScheduleHtml(schedule, lang)}
           ${skills.length ? `
             <ul class="tag-list">
               ${skills.map((s) => `<li class="tag">${escapeHtml(s)}</li>`).join('')}

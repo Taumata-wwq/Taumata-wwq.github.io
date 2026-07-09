@@ -124,7 +124,9 @@ function snapshotProjectForm() {
     tags: $('pf_tags').value,
     datetime: $('pf_datetime').value,
     images: JSON.stringify(editingImages),
-    links: JSON.stringify(editingLinks)
+    links: JSON.stringify(editingLinks),
+    createdAt: $('pf_created_at').value,
+    updatedAt: $('pf_updated_at').value
   };
 }
 
@@ -136,7 +138,9 @@ function snapshotNoteForm() {
     tags: $('nf_tag').value,
     excerptZh: $('nf_excerpt_zh').value,
     excerptEn: $('nf_excerpt_en').value,
-    links: JSON.stringify(editingLinks)
+    links: JSON.stringify(editingLinks),
+    createdAt: $('nf_created_at').value,
+    updatedAt: $('nf_updated_at').value
   };
 }
 
@@ -272,12 +276,6 @@ async function loadData() {
   if (!Array.isArray(data.about.paragraphs)) data.about.paragraphs = [];
   if (!Array.isArray(data.about.skills)) data.about.skills = [];
   if (!Array.isArray(data.about.contacts)) data.about.contacts = [];
-  /* schedule 字段默认值 */
-  if (!data.about.schedule) data.about.schedule = {};
-  if (!data.about.schedule.status) data.about.schedule.status = 'closed';
-  if (typeof data.about.schedule.slots !== 'number') data.about.schedule.slots = 0;
-  if (!data.about.schedule.turnaround) data.about.schedule.turnaround = '';
-  if (!data.about.schedule.note) data.about.schedule.note = { zh: '', en: '' };
 }
 
 /* ---------- 渲染 ---------- */
@@ -948,23 +946,6 @@ function renderAboutForm() {
   if ($('af_desc_zh')) $('af_desc_zh').value = a.desc?.zh || '';
   if ($('af_desc_en')) $('af_desc_en').value = a.desc?.en || '';
 
-  /* schedule 下拉：若 HTML 未提供 options 则填充 */
-  const scheduleStatus = $('af_schedule_status');
-  if (scheduleStatus) {
-    if (!scheduleStatus.options.length) {
-      scheduleStatus.innerHTML = `
-        <option value="open">开放接单</option>
-        <option value="busy">较忙</option>
-        <option value="closed">不接单</option>
-      `;
-    }
-    scheduleStatus.value = a.schedule?.status || 'closed';
-  }
-  if ($('af_schedule_slots')) $('af_schedule_slots').value = a.schedule?.slots ?? 0;
-  if ($('af_schedule_turnaround')) $('af_schedule_turnaround').value = a.schedule?.turnaround || '';
-  if ($('af_schedule_note_zh')) $('af_schedule_note_zh').value = a.schedule?.note?.zh || '';
-  if ($('af_schedule_note_en')) $('af_schedule_note_en').value = a.schedule?.note?.en || '';
-
   renderAboutParagraphs();
   renderAboutSkills();
   renderAboutContacts();
@@ -978,15 +959,6 @@ function syncAboutForm() {
   if ($('af_title_en')) { if (!a.title) a.title = {}; a.title.en = $('af_title_en').value; }
   if ($('af_desc_zh')) { if (!a.desc) a.desc = {}; a.desc.zh = $('af_desc_zh').value; }
   if ($('af_desc_en')) { if (!a.desc) a.desc = {}; a.desc.en = $('af_desc_en').value; }
-
-  /* schedule */
-  if (!a.schedule) a.schedule = {};
-  if ($('af_schedule_status')) a.schedule.status = $('af_schedule_status').value;
-  if ($('af_schedule_slots')) a.schedule.slots = parseInt($('af_schedule_slots').value, 10) || 0;
-  if ($('af_schedule_turnaround')) a.schedule.turnaround = $('af_schedule_turnaround').value;
-  if (!a.schedule.note) a.schedule.note = {};
-  if ($('af_schedule_note_zh')) a.schedule.note.zh = $('af_schedule_note_zh').value;
-  if ($('af_schedule_note_en')) a.schedule.note.en = $('af_schedule_note_en').value;
 
   /* 段落：从 DOM 读取 */
   const pRows = qall('#aboutParagraphs .dynamic-row--paragraph');
@@ -1082,9 +1054,7 @@ function bindAboutFields() {
   /* 静态字段：失焦时同步 + 防抖保存 */
   const staticIds = [
     'af_title_zh', 'af_title_en',
-    'af_desc_zh', 'af_desc_en',
-    'af_schedule_status', 'af_schedule_slots',
-    'af_schedule_turnaround', 'af_schedule_note_zh', 'af_schedule_note_en'
+    'af_desc_zh', 'af_desc_en'
   ];
   staticIds.forEach((id) => {
     const el = $(id);
@@ -1253,6 +1223,11 @@ function openProjectEditor(id, sourceButton) {
         : (p.year ? toDatetimeLocal(parseInt(p.year, 10) + '-01-01T00:00') : ''));
   $('pf_datetime').value = datetimeVal;
 
+  /* 创建/修改时间：新建时自动填当前时间；已有数据用原值 */
+  const nowLocal = toDatetimeLocal(new Date());
+  $('pf_created_at').value = p.createdAt ? toDatetimeLocal(p.createdAt.replace(' ', 'T')) : nowLocal;
+  $('pf_updated_at').value = p.updatedAt ? toDatetimeLocal(p.updatedAt.replace(' ', 'T')) : nowLocal;
+
   /* 初始化图片集 */
   if (Array.isArray(p.images) && p.images.length) {
     editingImages = p.images.map((im) => ({
@@ -1346,6 +1321,8 @@ function syncProjectEdit() {
     tags,
     datetime: datetime || undefined,
     year: year || undefined,
+    createdAt: fromDatetimeLocal($('pf_created_at').value) || undefined,
+    updatedAt: fromDatetimeLocal($('pf_updated_at').value) || undefined,
     image: coverUrl,
     images: images.length ? images : undefined,
     links: validLinks.length ? validLinks : undefined
@@ -1829,6 +1806,10 @@ function openNoteEditor(id, sourceButton) {
   $('nf_tag').value = Array.isArray(n.tags) ? n.tags.join(', ') : 'Note';
   $('nf_excerpt_zh').value = n.excerpt?.zh || '';
   $('nf_excerpt_en').value = n.excerpt?.en || '';
+  /* 创建/修改时间 */
+  const nowLocalN = toDatetimeLocal(new Date());
+  $('nf_created_at').value = n.createdAt ? toDatetimeLocal(n.createdAt.replace(' ', 'T')) : nowLocalN;
+  $('nf_updated_at').value = n.updatedAt ? toDatetimeLocal(n.updatedAt.replace(' ', 'T')) : nowLocalN;
   /* 初始化链接引用 */
   editingLinks = Array.isArray(n.links) && n.links.length
     ? n.links.map((l) => ({ name: l.name || '', url: l.url || '' }))
@@ -1880,6 +1861,8 @@ function syncNoteEdit() {
       zh: $('nf_excerpt_zh').value,
       en: $('nf_excerpt_en').value
     },
+    createdAt: fromDatetimeLocal($('nf_created_at').value) || undefined,
+    updatedAt: fromDatetimeLocal($('nf_updated_at').value) || undefined,
     links: validLinks.length ? validLinks : undefined
   };
   if (!item.excerpt.zh && !item.excerpt.en) delete item.excerpt;
@@ -2141,7 +2124,8 @@ function bindEvents() {
     'pf_title_zh', 'pf_title_en',
     'pf_desc_zh', 'pf_desc_en',
     'pf_body_zh', 'pf_body_en',
-    'pf_tags', 'pf_datetime'
+    'pf_tags', 'pf_datetime',
+    'pf_created_at', 'pf_updated_at'
   ];
   pfIds.forEach((id) => {
     const el = $(id);
@@ -2229,7 +2213,8 @@ function bindEvents() {
   const nfIds = [
     'nf_title_zh', 'nf_title_en',
     'nf_date', 'nf_tag',
-    'nf_excerpt_zh', 'nf_excerpt_en'
+    'nf_excerpt_zh', 'nf_excerpt_en',
+    'nf_created_at', 'nf_updated_at'
   ];
   nfIds.forEach((id) => {
     const el = $(id);

@@ -30,3 +30,12 @@ venv/
 # IDE 工作区文件
 *.code-workspace
 
+# 本地开发工具（仅用于本地，不上传到 GitHub Pages）
+app.py
+serve.py
+optimize_images.py
+start.bat
+
+# 本地规划文档（仅用于本地参考）
+DEVELOPMENT.md
+

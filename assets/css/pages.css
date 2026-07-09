@@ -710,65 +710,6 @@
 }
 
 /* ============================================================
-   档期/排期显示（关于页）
-   ============================================================ */
-.schedule-box {
-  margin: var(--sp-5) 0;
-  padding: var(--sp-4);
-  border: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-3);
-}
-.schedule-status {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-2);
-}
-.schedule-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-.schedule-box.is-open .schedule-dot { background: #4ade80; }
-.schedule-box.is-busy .schedule-dot { background: #fbbf24; }
-.schedule-box.is-closed .schedule-dot { background: #f87171; }
-.schedule-status-text {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--fg);
-}
-.schedule-info {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sp-4);
-}
-.schedule-item {
-  display: inline-flex;
-  align-items: baseline;
-  gap: var(--sp-1);
-}
-.schedule-label {
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  color: var(--fg-dim);
-  text-transform: uppercase;
-}
-.schedule-value {
-  font-size: 13px;
-  color: var(--fg);
-  font-weight: 500;
-}
-.schedule-note {
-  font-size: 13px;
-  color: var(--fg-muted);
-  line-height: 1.6;
-  margin: 0;
-}
-
-/* ============================================================
    Markdown 内容渲染样式
    ============================================================ */
 .md-content > *:first-child { margin-top: 0; }

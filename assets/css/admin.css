@@ -872,25 +872,6 @@
   color: var(--accent);
 }
 
-/* ---------- 档期设置字段 ---------- */
-.schedule-field {
-  padding: var(--sp-4);
-  background: var(--bg-sunken);
-  border: 1px solid var(--border);
-}
-.field-label-sm {
-  display: block;
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  color: var(--fg-dim);
-  text-transform: uppercase;
-  margin-bottom: var(--sp-1);
-}
-.field-grid--schedule {
-  margin-bottom: var(--sp-3);
-}
-
 /* ---------- 帮助选项卡 ---------- */
 .help-section {
   margin-bottom: var(--sp-6);

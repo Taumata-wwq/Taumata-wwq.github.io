@@ -35,7 +35,6 @@ export const DICT = {
   'hint.copy':           { zh: '点击复制',       en: 'click to copy' },
 
   /* Footer */
-  'footer.build':        { zh: '2026.06 · v1.0', en: '2026.06 · v1.0' },
   'footer.backtop':      { zh: '回到顶部 ↑',     en: 'Back to top ↑' },
 
   /* 子页面 */

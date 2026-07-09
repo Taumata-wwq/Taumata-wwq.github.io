@@ -151,7 +151,9 @@
           "name": "晕晕天国地狱国",
           "url": "https://www.bilibili.com/video/BV1KeoeB7EUk"
         }
-      ]
+      ],
+      "createdAt": "2026-04-24 00:00",
+      "updatedAt": "2026-07-09 08:42"
     },
     {
       "id": 2,
@@ -177,7 +179,9 @@
           "caption": null,
           "isCover": true
         }
-      ]
+      ],
+      "createdAt": "2024-04-10 21:00",
+      "updatedAt": "2026-07-09 08:42"
     },
     {
       "id": 4,
@@ -204,7 +208,9 @@
           "caption": null,
           "isCover": true
         }
-      ]
+      ],
+      "createdAt": "2024-03-22 15:00",
+      "updatedAt": "2026-07-09 08:42"
     },
     {
       "id": 5,
@@ -231,7 +237,9 @@
           "caption": null,
           "isCover": true
         }
-      ]
+      ],
+      "createdAt": "2024-10-08 11:00",
+      "updatedAt": "2026-07-09 08:42"
     },
     {
       "id": 3,
@@ -256,7 +264,9 @@
           "caption": null,
           "isCover": true
         }
-      ]
+      ],
+      "createdAt": "2024-12-29 22:00",
+      "updatedAt": "2026-07-09 08:42"
     },
     {
       "id": 6,
@@ -281,7 +291,9 @@
           "caption": null,
           "isCover": true
         }
-      ]
+      ],
+      "createdAt": "2025-03-29 16:00",
+      "updatedAt": "2026-07-09 08:42"
     },
     {
       "id": 7,
@@ -307,7 +319,9 @@
           "caption": null,
           "isCover": true
         }
-      ]
+      ],
+      "createdAt": "2025-03-28 19:00",
+      "updatedAt": "2026-07-09 08:42"
     },
     {
       "id": 8,
@@ -333,7 +347,9 @@
           "caption": null,
           "isCover": true
         }
-      ]
+      ],
+      "createdAt": "2025-12-06 03:00",
+      "updatedAt": "2026-07-09 08:42"
     },
     {
       "id": 9,
@@ -359,7 +375,9 @@
           "caption": null,
           "isCover": true
         }
-      ]
+      ],
+      "createdAt": "2025-11-25 01:00",
+      "updatedAt": "2026-07-09 08:42"
     },
     {
       "id": 10,
@@ -385,7 +403,9 @@
           "caption": null,
           "isCover": true
         }
-      ]
+      ],
+      "createdAt": "2024-03-28 23:00",
+      "updatedAt": "2026-07-09 08:42"
     },
     {
       "id": 11,
@@ -411,7 +431,9 @@
           "caption": null,
           "isCover": true
         }
-      ]
+      ],
+      "createdAt": "2024-03-09 20:00",
+      "updatedAt": "2026-07-09 08:42"
     },
     {
       "id": 12,
@@ -443,7 +465,9 @@
           "name": "magma",
           "url": "https://magma.com/d/MPwO09H8BQ"
         }
-      ]
+      ],
+      "createdAt": "2026-06-21 23:00",
+      "updatedAt": "2026-07-09 08:42"
     },
     {
       "id": 13,
@@ -480,7 +504,9 @@
           "name": "magma",
           "url": "https://magma.com/d/1Oe2SozUWD"
         }
-      ]
+      ],
+      "createdAt": "2026-06-20 22:00",
+      "updatedAt": "2026-07-09 08:42"
     },
     {
       "id": 14,
@@ -512,7 +538,9 @@
           "name": "magma",
           "url": "https://magma.com/d/P3g6MDuhlz"
         }
-      ]
+      ],
+      "createdAt": "2025-12-31 01:00",
+      "updatedAt": "2026-07-09 08:42"
     },
     {
       "id": 15,
@@ -531,12 +559,17 @@
       ],
       "datetime": "2026-07-03 03:00",
       "year": "2026",
-      "image": "assets/images/20260703071003.png",
+      "image": "assets/images/20260709074509.jpg",
       "images": [
+        {
+          "url": "assets/images/20260709074509.jpg",
+          "caption": null,
+          "isCover": true
+        },
         {
           "url": "assets/images/20260703071003.png",
           "caption": null,
-          "isCover": true
+          "isCover": false
         }
       ],
       "links": [
@@ -544,7 +577,9 @@
           "name": "magma",
           "url": "https://magma.com/d/5Zdqhz2lBk"
         }
-      ]
+      ],
+      "createdAt": "2026-07-03 03:00",
+      "updatedAt": "2026-07-09 08:42"
     }
   ],
   "notes": [
@@ -568,7 +603,9 @@
           "name": "链接地址",
           "url": "https://taumata-wwq.github.io/"
         }
-      ]
+      ],
+      "createdAt": "2026-07-02",
+      "updatedAt": "2026-07-09 08:42"
     },
     {
       "id": "n1",
@@ -584,7 +621,9 @@
       "excerpt": {
         "zh": "测试",
         "en": "Test"
-      }
+      },
+      "createdAt": "2026-06-20",
+      "updatedAt": "2026-07-09 08:42"
     }
   ],
   "about": {
@@ -595,15 +634,6 @@
     "desc": {
       "en": "Slackfruit on the slackfruit tree, under the slackfruit tree, you and me.",
       "zh": "摸鱼树上摸鱼果，摸鱼树下你和我"
-    },
-    "schedule": {
-      "status": "open",
-      "slots": 1,
-      "turnaround": "5-7 天",
-      "note": {
-        "zh": "详情请私信沟通",
-        "en": "Please DM for details"
-      }
     },
     "paragraphs": [
       {

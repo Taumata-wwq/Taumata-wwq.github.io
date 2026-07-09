@@ -242,6 +242,19 @@
             </div>
           </div>
 
+          <div class="field-grid">
+            <div class="field">
+              <label class="field-label">创建时间</label>
+              <input class="field-input" id="pf_created_at" type="datetime-local">
+              <div class="field-hint">记录条目创建时间（可修改）</div>
+            </div>
+            <div class="field">
+              <label class="field-label">修改时间</label>
+              <input class="field-input" id="pf_updated_at" type="datetime-local">
+              <div class="field-hint">记录条目最后修改时间（可修改）</div>
+            </div>
+          </div>
+
           <div class="field">
             <label class="field-label">作品图片集（多张）</label>
             <div class="field-hint" style="margin-bottom: var(--sp-3);">
@@ -299,6 +312,17 @@
               <label class="field-label">标签（逗号分隔）</label>
               <input class="field-input" id="nf_tag" type="text" placeholder="色彩, 绘画, Tool ..." autocomplete="off">
               <div id="nf_tag_ac" class="tag-autocomplete" style="display:none;"></div>
+            </div>
+          </div>
+
+          <div class="field-grid">
+            <div class="field">
+              <label class="field-label">创建时间</label>
+              <input class="field-input" id="nf_created_at" type="datetime-local">
+            </div>
+            <div class="field">
+              <label class="field-label">修改时间</label>
+              <input class="field-input" id="nf_updated_at" type="datetime-local">
             </div>
           </div>
 
@@ -367,42 +391,6 @@
           <div class="field">
             <label class="field-label">描述 · 英文</label>
             <input class="field-input" id="af_desc_en" type="text">
-          </div>
-        </div>
-
-        <!-- 档期/排期设置 -->
-        <div class="field schedule-field">
-          <label class="field-label">档期设置</label>
-          <div class="field-hint" style="margin-bottom: var(--sp-3);">
-            类似米画师等接稿平台的档期展示。显示在关于页个人介绍下方、技能上方。
-          </div>
-          <div class="field-grid field-grid--schedule">
-            <div class="field">
-              <label class="field-label-sm">档期状态</label>
-              <select class="field-input" id="af_schedule_status">
-                <option value="open">接稿中</option>
-                <option value="busy">繁忙/预约中</option>
-                <option value="closed">休息中</option>
-              </select>
-            </div>
-            <div class="field">
-              <label class="field-label-sm">可接数量</label>
-              <input class="field-input" id="af_schedule_slots" type="number" min="0" placeholder="3">
-            </div>
-            <div class="field">
-              <label class="field-label-sm">预计交稿周期</label>
-              <input class="field-input" id="af_schedule_turnaround" type="text" placeholder="7-14 天">
-            </div>
-          </div>
-          <div class="field-grid">
-            <div class="field">
-              <label class="field-label-sm">档期说明 · 中文</label>
-              <input class="field-input" id="af_schedule_note_zh" type="text" placeholder="详细说明档期、约稿流程等">
-            </div>
-            <div class="field">
-              <label class="field-label-sm">档期说明 · 英文</label>
-              <input class="field-input" id="af_schedule_note_en" type="text" placeholder="Details about commission process">
-            </div>
           </div>
         </div>
 
