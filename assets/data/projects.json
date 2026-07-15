@@ -87,6 +87,10 @@
         "zh": "",
         "en": ""
       }
+    },
+    {
+      "zh": "明日方舟终末地",
+      "en": ""
     }
   ],
   "site": {
@@ -559,6 +563,8 @@
       ],
       "datetime": "2026-07-03 03:00",
       "year": "2026",
+      "createdAt": "2026-07-03 03:00",
+      "updatedAt": "2026-07-09 08:42",
       "image": "assets/images/20260709074509.jpg",
       "images": [
         {
@@ -577,9 +583,34 @@
           "name": "magma",
           "url": "https://magma.com/d/5Zdqhz2lBk"
         }
+      ]
+    },
+    {
+      "id": 16,
+      "title": {
+        "zh": "决",
+        "en": "Arcane"
+      },
+      "desc": {
+        "zh": "久违的画了成图...",
+        "en": "After such a long time, I finally drew a finished piece..."
+      },
+      "tags": [
+        "明日方舟终末地",
+        "绘画"
       ],
-      "createdAt": "2026-07-03 03:00",
-      "updatedAt": "2026-07-09 08:42"
+      "datetime": "2026-07-15 12:02",
+      "year": "2026",
+      "createdAt": "2026-07-15 12:02",
+      "updatedAt": "2026-07-15 12:02",
+      "image": "assets/images/20260715120510.png",
+      "images": [
+        {
+          "url": "assets/images/20260715120510.png",
+          "caption": null,
+          "isCover": true
+        }
+      ]
     }
   ],
   "notes": [
@@ -619,10 +650,10 @@
         "笔记"
       ],
       "excerpt": {
-        "zh": "测试",
-        "en": "Test"
+        "zh": "还是不会上色...还要继续学习......",
+        "en": "Still can't color... I need to keep learning......"
       },
-      "createdAt": "2026-06-20",
+      "createdAt": "2026-06-20 08:00",
       "updatedAt": "2026-07-09 08:42"
     }
   ],
@@ -665,7 +696,10 @@
       "sai2",
       "csp",
       "vibe coding",
-      "obs?"
+      "obs",
+      "live2d",
+      "ps",
+      "python"
     ],
     "contacts": [
       {
